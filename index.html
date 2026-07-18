@@ -107,13 +107,8 @@
     .btn-page { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; }
     .btn-page:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    /* LAYOUT GRAFIK CHART ZONE */
-    .charts-grid-container {
-      display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 1.5rem;
-    }
-    .chart-card-box {
-      background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center;
-    }
+    .charts-grid-container { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+    .chart-card-box { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
     .chart-card-box h4 { font-size: 0.9rem; color: #fff; margin-bottom: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
 
     .tx-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-top: 3rem; display: none; }
@@ -128,20 +123,20 @@
     .status-selesai { background: rgba(0, 255, 170, 0.15); color: var(--accent); }
     .sel-status-inline { background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: #fff; padding: 0.2rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
 
-    .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100vh; background: rgba(10, 15, 28, 0.98); border-left: 1px solid var(--border); box-shadow: -10px 0 40px rgba(0,0,0,0.6); z-index: 250; transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 2rem 1.5rem; display: flex; flex-direction: column; }
+    .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100vh; background: rgba(10, 15, 28, 0.98); border-left: 1px solid var(--border); box-shadow: -10px 0 40px rgba(0,0,0,0.6); z-index: 250; transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 1.5rem 1.25rem; display: flex; flex-direction: column; }
     .cart-drawer.open { right: 0; }
-    .cart-items-container { flex: 1; overflow-y: auto; margin: 1.5rem 0; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
-    .cart-item-info h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: #fff; }
-    .cart-item-info p { font-size: 0.9rem; color: var(--accent); font-weight: 700; }
+    .cart-items-container { flex: 1; overflow-y: auto; margin: 1rem 0; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+    .cart-item-info h4 { font-size: 0.9rem; margin-bottom: 0.2rem; color: #fff; }
+    .cart-item-info p { font-size: 0.85rem; color: var(--accent); font-weight: 700; }
     .cart-qty-control { display: flex; align-items: center; gap: 0.6rem; }
-    .btn-qty { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; }
+    .btn-qty { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; }
 
-    .cart-footer { padding-top: 1.5rem; border-top: 1px solid var(--border); }
-    .total-row { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 800; margin-bottom: 1.5rem; }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.9rem; }
+    .cart-footer { padding-top: 1rem; border-top: 1px solid var(--border); }
+    .total-row { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.65rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.85rem; }
 
     .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 10, 0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem; }
     .modal-backdrop.show { opacity: 1; pointer-events: auto; }
@@ -157,9 +152,7 @@
       .role-btn { font-size: 0.85rem; padding: 0.5rem 1.25rem; } .cart-trigger { padding: 0.75rem; } .container { margin: 2.5rem auto; padding: 0 1.5rem; }
       .filter-bar { flex-direction: row; justify-content: space-between; padding: 1.25rem; } .search-input-group { flex: 1; } .filter-actions-row { width: auto; justify-content: flex-end; } .select-custom { min-width: 180px; flex: none; } .modal-window { padding: 2rem; }
       .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
-      .hero-section h1 { font-size: 2.5rem; }
-      .user-track-bar { padding: 1.5rem; }
-      .charts-grid-container { grid-template-columns: 1fr 1fr; }
+      .hero-section h1 { font-size: 2.5rem; } .user-track-bar { padding: 1.5rem; } .charts-grid-container { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -202,11 +195,9 @@
     <div class="catalog-grid" id="catalogGrid"></div>
     <div class="pagination-container" id="paginationBox"></div>
 
-    <!-- PANEL MANAGEMEN TRANSAKSI & GRAFIK DASHBOARD (EKSKLUSIF ADMIN) -->
     <div class="tx-section" id="adminTxPanel">
       <h3 style="color:#fff; margin-bottom: 1rem;"><i class="fa-solid fa-chart-pie" style="color:#00ffaa; margin-right:8px;"></i> Analytics & Business Dashboard</h3>
       
-      <!-- TEMPAT DUA KANVAS GRAFIK BERDIRI -->
       <div class="charts-grid-container">
         <div class="chart-card-box">
           <h4><i class="fa-solid fa-chart-line" style="color:#00ffaa;"></i> Tren Omset Bulanan (Rp)</h4>
@@ -239,12 +230,19 @@
 
   <div class="cart-drawer" id="cartDrawer">
     <div class="modal-header"><h3>Pesanan Premium</h3><button class="modal-close" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button></div>
+    
     <div class="cart-items-container" id="cartItemsList"></div>
+    
     <div class="cart-footer">
       <div class="total-row"><span>Total:</span><span id="cartTotalLabel" style="color: #00ffaa;">Rp 0</span></div>
+      
       <div class="form-group"><label>Nama Pembeli</label><input type="text" id="txtOrderName" placeholder="Masukkan nama Anda"></div>
       <div class="form-group"><label>Email Kirim / Catatan</label><textarea id="txtOrderAddress" rows="2" placeholder="Contoh: emailanda@gmail.com"></textarea></div>
-      <button class="btn-premium" style="width: 100%; justify-content: center; padding: 1rem;" onclick="processCheckout()"><i class="fa-brands fa-whatsapp"></i> Ambil Akun via WhatsApp</button>
+      
+      <!-- SATU TOMBOL CHECKOUT LANGSUNG (ALUR PEMBAYARAN MANUAL AMAN) -->
+      <button class="btn-premium" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.9rem;" onclick="processCheckout()">
+        <i class="fa-brands fa-whatsapp"></i> Ambil Akun via WhatsApp
+      </button>
     </div>
   </div>
 
@@ -271,7 +269,7 @@
 
   <script>
     var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx052L7JBQFot_fTf_ElISxnxli77924GarqDcjEDwMnEbtsKRcFJ-ca-pOvYrsQkGCpA/exec"; 
-    
+
     var currentRole = 'user';
     var currentPage = 1;
     var pageLimit = 12;
@@ -281,7 +279,6 @@
     var cart = [];
     var WHATSAPP_ADMIN_NUMBER = "6285888011755";
     
-    // Objek instansiasi grafik penampung lokal
     var omsetChartInstance = null;
     var produkChartInstance = null;
 
@@ -412,8 +409,6 @@
         if (res && res.transactions) {
           cacheTransactions = res.transactions; 
           renderTransactionTable(res.transactions);
-          
-          // BANGUN GRAFIK DINAMIS BEGITU DATA BERHASIL DITARIK KEMBALI
           buildAnalyticsCharts(res.transactions);
         }
       });
@@ -444,85 +439,33 @@
       });
     }
 
-    /**
-     * ENGINE ANALISIS DATA SPREADSHEET KE BENTUK GRAFIK FUTURISTIK (CHART.JS)
-     */
     function buildAnalyticsCharts(transactions) {
       var omsetBulanan = { "Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "Mei": 0, "Jun": 0, "Jul": 0, "Agu": 0, "Sep": 0, "Okt": 0, "Nov": 0, "Des": 0 };
       var kontribusiProduk = { "YouTube": 0, "CapCut": 0, "Canva": 0, "Lainnya": 0 };
-
       transactions.forEach(function(tx) {
-        var tglStr = tx[1]; // Kolom Tanggal (Format: yyyy-MM-dd HH:mm:ss)
-        var total = Number(tx[3]) || 0;
-        var status = tx[4] || "Menunggu";
-
-        // Hanya hitung omset dari transaksi yang sukses/selesai demi keakuratan pembukuan keuangan
+        var tglStr = tx[1]; var total = Number(tx[3]) || 0; var status = tx[4] || "Menunggu";
         if (status === "Selesai" || status === "Diproses") {
           if (tglStr && tglStr.length >= 7) {
-            var bulanIdx = parseInt(tglStr.substring(5, 7), 10);
-            var bulanKeys = Object.keys(omsetBulanan);
-            if (bulanIdx >= 1 && bulanIdx <= 12) {
-              omsetBulanan[bulanKeys[bulanIdx - 1]] += total;
-            }
+            var bulanIdx = parseInt(tglStr.substring(5, 7), 10); var bulanKeys = Object.keys(omsetBulanan);
+            if (bulanIdx >= 1 && bulanIdx <= 12) { omsetBulanan[bulanKeys[bulanIdx - 1]] += total; }
           }
         }
-
-        // Hitung popularitas produk digital berdasarkan kemunculan ID Transaksi
         var idTx = tx[0].toUpperCase();
-        // Skenario pendekatan relasi kategori produk sederhana
-        if (idTx.indexOf("PEDIA") !== -1) {
-          // Akumulasi acak distribusi proporsional
-          kontribusiProduk["YouTube"] += total * 0.4;
-          kontribusiProduk["CapCut"] += total * 0.3;
-          kontribusiProduk["Canva"] += total * 0.3;
-        }
+        if (idTx.indexOf("PEDIA") !== -1) { kontribusiProduk["YouTube"] += total * 0.4; kontribusiProduk["CapCut"] += total * 0.3; kontribusiProduk["Canva"] += total * 0.3; }
       });
-
-      // 1. RENDER GRAFIK GARIS (TREND OMSET BULANAN)
       var ctxLine = document.getElementById('omsetLineChart').getContext('2d');
-      if (omsetChartInstance) { omsetChartInstance.destroy(); } // Reset instansiasi lama
+      if (omsetChartInstance) { omsetChartInstance.destroy(); }
       omsetChartInstance = new Chart(ctxLine, {
         type: 'line',
-        data: {
-          labels: Object.keys(omsetBulanan),
-          datasets: [{
-            label: 'Omset Selesai (Rp)',
-            data: Object.values(omsetBulanan),
-            borderColor: '#00ffaa',
-            backgroundColor: 'rgba(0, 255, 170, 0.05)',
-            borderWidth: 3,
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } },
-            y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } }
-          }
-        }
+        data: { labels: Object.keys(omsetBulanan), datasets: [{ label: 'Omset Selesai (Rp)', data: Object.values(omsetBulanan), borderColor: '#00ffaa', backgroundColor: 'rgba(0, 255, 170, 0.05)', borderWidth: 3, tension: 0.4, fill: true }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } }, y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } } } }
       });
-
-      // 2. RENDER GRAFIK DONAT (PROPORSI POPULARITAS PRODUK DIGITAL)
       var ctxPie = document.getElementById('produkPieChart').getContext('2d');
-      if (produkChartInstance) { produkChartInstance.destroy(); }
+      if (produkChartInstance) { fontColor = '#f3f4f6'; produkChartInstance.destroy(); }
       produkChartInstance = new Chart(ctxPie, {
         type: 'doughnut',
-        data: {
-          labels: Object.keys(kontribusiProduk),
-          datasets: [{
-            data: Object.values(kontribusiProduk),
-            backgroundColor: ['#00ffaa', '#00bfff', '#ffaa00', '#ff4a5a'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'right', labels: { color: '#f3f4f6', font: { size: 10 } } } },
-          cutout: '70%'
-        }
+        data: { labels: Object.keys(kontribusiProduk), datasets: [{ data: Object.values(kontribusiProduk), backgroundColor: ['#00ffaa', '#00bfff', '#ffaa00', '#ff4a5a'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#f3f4f6', font: { size: 10 } } } }, cutout: '70%' }
       });
     }
 
@@ -605,13 +548,11 @@
         if(res.success) {
           var text = "*SAYUR PEDIA - DIGITAL OUTLET INVOICE*\n====================================\n*ID Transaksi:* " + res.transactionId + "\n*Nama Pelanggan:* " + name + "\n*Target Kirim:* " + mailNote + "\n\n*Detail Akun Premium:*\n";
           cart.forEach(function(item, x) { text += (x+1) + ". " + item.nama + " (" + item.qty + "x) -> Rp " + (item.harga * item.qty).toLocaleString('id-ID') + "\n"; });
-          text += "\n*Total Biaya:* Rp " + total.toLocaleString('id-ID') + "\n====================================\nMohon aktivasi kredensial login.";
+          text += "\n*Total Biaya:* Rp " + total.toLocaleString('id-ID') + "\n====================================\n*Status Pembayaran:* [ MENUNGGU KONFIRMASI MANUAL ADMIN ]\n\nMohon diinfokan nomor rekening transfer bank toko.";
           cart = []; updateCartUi(); toggleCart(false);
           document.getElementById('txtOrderName').value = ''; document.getElementById('txtOrderAddress').value = '';
           window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(text), '_blank');
-          
-          preloadTransactionCache();
-          doGlobalFetch();
+          preloadTransactionCache(); doGlobalFetch();
         }
       });
     }

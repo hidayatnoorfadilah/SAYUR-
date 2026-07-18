@@ -11,6 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
+    /* VARIABEL UTAMA (DEFAULT DARK MODE) */
     :root {
       --bg-deep: #070a13;
       --bg-card: rgba(15, 22, 36, 0.7);
@@ -24,152 +25,153 @@
       --warning: #ffaa00;
       --info: #00bfff;
       --success: #22c55e;
+      --header-bg: rgba(7, 10, 19, 0.85);
+      --input-bg: rgba(0, 0, 0, 0.4);
+      --brand-text: #fff;
+    }
+
+    /* OTOMATIS BERUBAH JIKA HP/LAPTOP MENGGUNAKAN LIGHT MODE */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-deep: #f4f6f9;
+        --bg-card: rgba(255, 255, 255, 0.85);
+        --bg-card-hover: rgba(255, 255, 255, 0.98);
+        --accent: #00aa6c;
+        --accent-glow: rgba(0, 170, 108, 0.2);
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --border: rgba(0, 0, 0, 0.08);
+        --header-bg: rgba(255, 255, 255, 0.9);
+        --input-bg: rgba(255, 255, 255, 1);
+        --brand-text: #1f2937;
+      }
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     html, body { max-width: 100%; overflow-x: hidden; }
     body {
       background-color: var(--bg-deep); color: var(--text-main); min-height: 100vh;
-      background-image: radial-gradient(circle at 5% 15%, rgba(0, 255, 170, 0.06) 0%, transparent 35%), radial-gradient(circle at 95% 85%, rgba(0, 255, 170, 0.04) 0%, transparent 45%);
+      background-image: radial-gradient(circle at 5% 15%, var(--accent-glow) 0%, transparent 35%);
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    header { background: rgba(7, 10, 19, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
-    .brand { font-size: 1.2rem; font-weight: 800; letter-spacing: 0.5px; color: #fff; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    header { background: var(--header-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; transition: background 0.3s; }
+    .brand { font-size: 1.2rem; font-weight: 800; letter-spacing: 0.5px; color: var(--brand-text); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
     .brand span { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
-    .brand small { font-size: 0.55rem; background: rgba(255,255,255,0.1); padding: 1px 4px; border-radius: 4px; }
+    .brand small { font-size: 0.55rem; background: rgba(120,120,120,0.15); color: var(--text-main); padding: 1px 4px; border-radius: 4px; }
 
     .nav-controls { display: flex; align-items: center; gap: 0.5rem; }
-    .role-container { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); padding: 0.2rem; border-radius: 30px; display: flex; }
+    .role-container { background: rgba(120, 120, 120, 0.1); border: 1px solid var(--border); padding: 0.2rem; border-radius: 30px; display: flex; }
     .role-btn { padding: 0.4rem 0.8rem; border-radius: 20px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 600; font-size: 0.75rem; transition: all 0.3s; white-space: nowrap; }
-    .role-btn.active { background: var(--accent); color: var(--bg-deep); box-shadow: 0 4px 15px var(--accent-glow); }
-
-    .cart-trigger { position: relative; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 0.6rem; border-radius: 50%; cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
-    .cart-trigger:hover { border-color: var(--accent); color: var(--accent); }
-    .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 0.65rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .role-btn.active { background: var(--accent); color: #fff; box-shadow: 0 4px 15px var(--accent-glow); }
 
     .container { max-width: 1300px; margin: 1.5rem auto; padding: 0 1rem; width: 100%; }
     
     .hero-section { text-align: center; padding: 1rem 0.5rem 2rem 0.5rem; max-width: 800px; margin: 0 auto; }
-    .hero-section h1 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 0.75rem; line-height: 1.3; }
+    .hero-section h1 { font-size: 1.8rem; font-weight: 800; color: var(--brand-text); margin-bottom: 0.75rem; line-height: 1.3; }
     .hero-section h1 span { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
     .hero-section p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
 
     .user-track-bar {
-      background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--border); border-radius: 12px;
+      background: rgba(120, 120, 120, 0.05); border: 1px dashed var(--border); border-radius: 12px;
       padding: 1rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; align-items: center;
     }
     .user-track-bar label { font-size: 0.8rem; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; }
     .track-input-group { display: flex; width: 100%; gap: 0.5rem; max-width: 500px; }
-    .track-input-group input { flex: 1; padding: 0.65rem 1rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.85rem; text-align: center; font-weight: 600; }
+    .track-input-group input { flex: 1; padding: 0.65rem 1rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 0.85rem; text-align: center; font-weight: 600; }
     .track-input-group input:focus { outline: none; border-color: var(--accent); }
     .btn-track { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 0 1.2rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
-    .btn-track:hover { background: var(--accent); color: var(--bg-deep); }
+    .btn-track:hover { background: var(--accent); color: #fff; }
     
     .track-result-box {
-      width: 100%; max-width: 500px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      width: 100%; max-width: 500px; background: rgba(120,120,120,0.08); border: 1px solid var(--border);
       border-radius: 10px; padding: 1rem; display: none; text-align: left; font-size: 0.85rem;
     }
-    .track-row-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 0.4rem; }
+    .track-row-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
     .track-row-item:last-child { margin-bottom: 0; border: none; padding-bottom: 0; }
 
     .filter-bar { background: var(--bg-card); border: 1px solid var(--border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
     .search-input-group { position: relative; width: 100%; }
     .search-input-group i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-    .search-input-group input { width: 100%; padding: 0.8rem 1rem 0.8rem 2.6rem; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.9rem; transition: all 0.3s; }
+    .search-input-group input { width: 100%; padding: 0.8rem 1rem 0.8rem 2.6rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 0.9rem; transition: all 0.3s; }
     .search-input-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
     .filter-actions-row { display: flex; gap: 1rem; width: 100%; align-items: center; justify-content: space-between; }
-    .select-custom { padding: 0.8rem 1rem; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 8px; color: #fff; cursor: pointer; font-size: 0.9rem; flex: 1; min-width: 0; }
-    .btn-premium { background: var(--accent); color: var(--bg-deep); padding: 0.8rem 1.2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; font-size: 0.9rem; white-space: nowrap; }
+    .select-custom { padding: 0.8rem 1rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); cursor: pointer; font-size: 0.9rem; flex: 1; min-width: 0; }
+    .btn-premium { background: var(--accent); color: #fff; padding: 0.8rem 1.2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; font-size: 0.9rem; white-space: nowrap; }
     .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--accent-glow); }
 
     .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; width: 100%; }
     .product-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; width: 100%; }
-    .product-card:hover { transform: translateY(-4px); border-color: rgba(0, 255, 170, 0.35); background: var(--bg-card-hover); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); }
+    .product-card:hover { transform: translateY(-4px); border-color: var(--accent); background: var(--bg-card-hover); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); }
 
-    .img-wrapper { position: relative; width: 100%; padding-top: 100%; background: #080d1a; }
+    .img-wrapper { position: relative; width: 100%; padding-top: 100%; background: rgba(120,120,120,0.1); }
     .product-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-    .tag-category { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(7, 10, 19, 0.85); backdrop-filter: blur(5px); padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.65rem; font-weight: 700; color: var(--accent); border: 1px solid rgba(0, 255, 170, 0.25); text-transform: uppercase; }
+    .tag-category { position: absolute; top: 0.5rem; right: 0.5rem; background: var(--header-bg); backdrop-filter: blur(5px); padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.65rem; font-weight: 700; color: var(--accent); border: 1px solid var(--border); text-transform: uppercase; }
 
     .product-info { padding: 0.9rem; display: flex; flex-direction: column; flex: 1; }
-    .product-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--brand-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .product-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.8rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8em; }
 
     .meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.6rem; border-top: 1px solid var(--border); }
     .price-tag { font-size: 1.05rem; font-weight: 800; color: var(--accent); }
     .stock-tag { font-size: 0.7rem; color: var(--text-muted); }
-    .stock-tag span { font-weight: 700; color: #fff; }
+    .stock-tag span { font-weight: 700; color: var(--brand-text); }
 
     .card-actions { margin-top: 0.8rem; display: flex; gap: 0.4rem; }
     .btn-buy { flex: 1; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 0.5rem; border-radius: 6px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.8rem; }
-    .btn-buy:hover { background: var(--accent); color: var(--bg-deep); }
+    .btn-buy:hover { background: var(--accent); color: #fff; }
 
     .pagination-container { margin-top: 3rem; display: flex; justify-content: center; align-items: center; gap: 1rem; }
-    .btn-page { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; }
+    .btn-page { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; }
     .btn-page:disabled { opacity: 0.25; cursor: not-allowed; }
 
     .charts-grid-container { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 1.5rem; }
-    .chart-card-box { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
-    .chart-card-box h4 { font-size: 0.9rem; color: #fff; margin-bottom: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
+    .chart-card-box { background: rgba(120, 120, 120, 0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
+    .chart-card-box h4 { font-size: 0.9rem; color: var(--brand-text); margin-bottom: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
 
     .tx-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-top: 3rem; display: none; }
     .tx-table-wrapper { width: 100%; overflow-x: auto; margin-top: 1rem; }
     .tx-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; min-width: 600px; }
     .tx-table th, .tx-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
-    .tx-table th { background: rgba(0,0,0,0.2); color: var(--accent); font-weight: 700; }
+    .tx-table th { background: rgba(120,120,120,0.1); color: var(--accent); font-weight: 700; }
     
     .status-badge { padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; display: inline-block; }
     .status-menunggu { background: rgba(255, 170, 0, 0.15); color: var(--warning); }
     .status-diproses { background: rgba(0, 191, 255, 0.15); color: var(--info); }
     .status-selesai { background: rgba(0, 255, 170, 0.15); color: var(--accent); }
-    .sel-status-inline { background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: #fff; padding: 0.2rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+    .sel-status-inline { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 0.2rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
 
-    .admin-action-header {
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 2rem;
-    }
-    .admin-button-group {
-      display: flex; gap: 0.5rem; flex-wrap: wrap;
-    }
-    .btn-pdf {
-      background: var(--danger); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px;
-      font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s;
-    }
+    .admin-action-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+    .admin-button-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn-pdf { background: var(--danger); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
     .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 74, 90, 0.3); }
-
-    /* STYLE TOMBOL LAPORAN WHATSAPP BARU */
-    .btn-wa-report {
-      background: var(--success); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px;
-      font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s;
-    }
+    .btn-wa-report { background: var(--success); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
     .btn-wa-report:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
 
-    .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100vh; background: rgba(10, 15, 28, 0.98); border-left: 1px solid var(--border); box-shadow: -10px 0 40px rgba(0,0,0,0.6); z-index: 250; transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 1.5rem 1.25rem; display: flex; flex-direction: column; }
-    .cart-drawer.open { right: 0; }
-    .cart-items-container { flex: 1; overflow-y: auto; margin: 1rem 0; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
-    .cart-item-info h4 { font-size: 0.9rem; margin-bottom: 0.2rem; color: #fff; }
-    .cart-item-info p { font-size: 0.85rem; color: var(--accent); font-weight: 700; }
-    .cart-qty-control { display: flex; align-items: center; gap: 0.6rem; }
-    .btn-qty { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; }
-
-    .cart-footer { padding-top: 1rem; border-top: 1px solid var(--border); }
-    .total-row { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-group input, .form-group textarea { width: 100%; padding: 0.65rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.85rem; }
-
-    .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 10, 0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem; }
+    .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 10, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem; }
     .modal-backdrop.show { opacity: 1; pointer-events: auto; }
-    .modal-window { background: rgba(15, 23, 39, 0.98); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; width: 100%; max-width: 520px; padding: 1.5rem; transform: translateY(20px); transition: transform 0.3s; max-height: 90vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .modal-window { background: var(--bg-card-hover); border: 1px solid var(--border); border-radius: 24px; width: 100%; max-width: 520px; padding: 1.5rem; transform: translateY(20px); transition: transform 0.3s; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; color: var(--brand-text); }
     .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
 
-    .shimmer { background: linear-gradient(90deg, #0f1624 25%, #1d283c 50%, #0f1624 75%); background-size: 200% 100%; animation: loadingShimmer 1.5s infinite; }
-    @keyframes loadingShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    /* LAYOUT SUB MODUL QUANTITY CONTROL DI POP-UP USER */
+    .qty-input-row {
+      display: flex; align-items: center; gap: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); padding: 0.4rem; border-radius: 8px; width: fit-content; margin-top: 0.4rem;
+    }
+    .btn-modal-qty { background: rgba(120,120,120,0.15); border: none; color: var(--text-main); width: 30px; height: 30px; font-weight: 700; border-radius: 6px; cursor: pointer; }
+    .input-modal-qty-val { border: none; background: transparent; color: var(--text-main); width: 45px; text-align: center; font-weight: 700; font-size: 0.95rem; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.65rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 0.85rem; }
+
+    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #fff; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.9rem; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; z-index: 300; pointer-events: none; box-shadow: 0 4px 15px var(--accent-glow); }
+    .toast.show { opacity: 1; transform: translateY(0); }
 
     @media (min-width: 768px) {
       header { padding: 1.2rem 2rem; } .brand { font-size: 1.5rem; gap: 0.6rem; } .brand small { font-size: 0.65rem; padding: 2px 6px; }
-      .role-btn { font-size: 0.85rem; padding: 0.5rem 1.25rem; } .cart-trigger { padding: 0.75rem; } .container { margin: 2.5rem auto; padding: 0 1.5rem; }
+      .role-btn { font-size: 0.85rem; padding: 0.5rem 1.25rem; } .container { margin: 2.5rem auto; padding: 0 1.5rem; }
       .filter-bar { flex-direction: row; justify-content: space-between; padding: 1.25rem; } .search-input-group { flex: 1; } .filter-actions-row { width: auto; justify-content: flex-end; } .select-custom { min-width: 180px; flex: none; } .modal-window { padding: 2rem; }
       .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
       .hero-section h1 { font-size: 2.5rem; } .user-track-bar { padding: 1.5rem; } .charts-grid-container { grid-template-columns: 1fr 1fr; }
@@ -185,7 +187,6 @@
         <button class="role-btn active" id="btnRoleUser" onclick="switchRole('user')">User Mode</button>
         <button class="role-btn" id="btnRoleAdmin" onclick="switchRole('admin')">Admin Mode</button>
       </div>
-      <button class="cart-trigger" onclick="toggleCart(true)"><i class="fa-solid fa-shopping-bag"></i><div class="cart-badge" id="cartBadge">0</div></button>
     </div>
   </header>
 
@@ -216,7 +217,7 @@
     <div class="pagination-container" id="paginationBox"></div>
 
     <div class="tx-section" id="adminTxPanel">
-      <h3 style="color:#fff; margin-bottom: 1rem;"><i class="fa-solid fa-chart-pie" style="color:#00ffaa; margin-right:8px;"></i> Analytics & Business Dashboard</h3>
+      <h3 style="color: var(--brand-text); margin-bottom: 1rem;"><i class="fa-solid fa-chart-pie" style="color:#00ffaa; margin-right:8px;"></i> Analytics & Business Dashboard</h3>
       
       <div class="charts-grid-container">
         <div class="chart-card-box">
@@ -230,7 +231,7 @@
       </div>
 
       <div class="admin-action-header">
-        <h3 style="color:#fff;"><i class="fa-solid fa-receipt" style="color:#00ffaa; margin-right:8px;"></i> Manajemen Status Transaksi Pelanggan</h3>
+        <h3 style="color: var(--brand-text);"><i class="fa-solid fa-receipt" style="color:#00ffaa; margin-right:8px;"></i> Manajemen Status Transaksi Pelanggan</h3>
         <div class="admin-button-group">
           <button class="btn-wa-report" onclick="generateWhatsappReportAdmin()"><i class="fa-brands fa-whatsapp"></i> Laporan WhatsApp</button>
           <button class="btn-pdf" onclick="generateInvoicePdfReport()"><i class="fa-solid fa-file-pdf"></i> Unduh Laporan PDF</button>
@@ -255,18 +256,31 @@
 
   </div>
 
-  <div class="cart-drawer" id="cartDrawer">
-    <div class="modal-header"><h3>Pesanan Premium</h3><button class="modal-close" onclick="toggleCart(false)"><i class="fa-solid fa-xmark"></i></button></div>
-    
-    <div class="cart-items-container" id="cartItemsList"></div>
-    
-    <div class="cart-footer">
-      <div class="total-row"><span>Total:</span><span id="cartTotalLabel" style="color: #00ffaa;">Rp 0</span></div>
-      
-      <div class="form-group"><label>Nama Pembeli</label><input type="text" id="txtOrderName" placeholder="Masukkan nama Anda"></div>
-      <div class="form-group"><label>Email Kirim / Catatan</label><textarea id="txtOrderAddress" rows="2" placeholder="Contoh: emailanda@gmail.com"></textarea></div>
-      
-      <button class="btn-premium" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.9rem;" onclick="processCheckout()">
+  <!-- POP-UP DIALOG CHECKOUT DENGAN TAMBAHAN INPUT JUMLAH QUANTITY SLOT -->
+  <div class="modal-backdrop" id="userOrderModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-bolt" style="color: var(--accent);"></i> Form Ambil Slot</h3>
+        <button class="modal-close" onclick="closeUserOrderModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="form-group" style="background: rgba(120,120,120,0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 1.25rem;">
+        <span style="font-size:0.75rem; color:var(--text-muted); display:block; text-transform:uppercase;">Layanan Dipilih:</span>
+        <strong id="lblTargetItemName" style="font-size:1rem; color: var(--brand-text);">Nama Akun</strong>
+        <span id="lblTargetItemPrice" style="font-size:0.9rem; color:var(--accent); font-weight:700; display:block; margin-top:2px;">Rp 0</span>
+        
+        <!-- SUB INPUT KUANTITAS DINAMIS -->
+        <div style="margin-top: 0.75rem; border-top: 1px dashed var(--border); padding-top: 0.6rem;">
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block; text-transform:uppercase; margin-bottom:2px;">Tentukan Jumlah Slot:</span>
+          <div class="qty-input-row">
+            <button class="btn-modal-qty" onclick="adjustModalQtyValue(-1)">-</button>
+            <input type="text" class="input-modal-qty-val" id="txtModalQtyField" value="1" readonly>
+            <button class="btn-modal-qty" onclick="adjustModalQtyValue(1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group"><label>Nama Pembeli</label><input type="text" id="txtUserOrderName" placeholder="Masukkan nama Anda"></div>
+      <div class="form-group"><label>Email Kirim / Catatan</label><textarea id="txtUserOrderAddress" rows="2" placeholder="Contoh: emailanda@gmail.com"></textarea></div>
+      <button class="btn-premium" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem;" onclick="executeDirectUserCheckout()">
         <i class="fa-brands fa-whatsapp"></i> Ambil Akun via WhatsApp
       </button>
     </div>
@@ -302,9 +316,11 @@
     var searchTimeout = null;
     var globalProducts = [];
     var cacheTransactions = []; 
-    var cart = [];
     var WHATSAPP_ADMIN_NUMBER = "6285888011755";
     
+    var activeSingleSelection = null;
+    var currentModalQty = 1; // Counter jumlah kuantitas lokal
+
     var omsetChartInstance = null;
     var produkChartInstance = null;
 
@@ -313,6 +329,9 @@
       if (savedToken) { currentRole = 'admin'; executeRoleVisualChange('admin'); }
       doGlobalFetch();
       preloadTransactionCache();
+      window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+        if (currentRole === 'admin' && cacheTransactions.length > 0) { buildAnalyticsCharts(cacheTransactions); }
+      });
     });
 
     function showToast(message) {
@@ -321,11 +340,32 @@
       setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
 
+    /**
+     * MENGATUR COUNTER KUANTITAS SLOT SECARA REAL-TIME DI DALAM POP-UP
+     */
+    function adjustModalQtyValue(delta) {
+      if (!activeSingleSelection) return;
+      var maxAvailableStock = activeSingleSelection.stok;
+      var nextQty = currentModalQty + delta;
+      
+      if (nextQty < 1) return;
+      if (nextQty > maxAvailableStock) {
+        showToast("Slot maksimal yang tersedia saat ini adalah " + maxAvailableStock + "!");
+        return;
+      }
+      
+      currentModalQty = nextQty;
+      document.getElementById('txtModalQtyField').value = currentModalQty;
+      
+      // Update label harga akumulasi secara live
+      var computedTotalPrice = activeSingleSelection.harga * currentModalQty;
+      document.getElementById('lblTargetItemPrice').innerText = "Total Harga (" + currentModalQty + "x): Rp " + computedTotalPrice.toLocaleString('id-ID');
+    }
+
     function maskStringData(str, isEmail) {
       if (!str || str.length < 3) return "***";
       if (isEmail && str.indexOf("@") !== -1) {
-        var parts = str.split("@");
-        var name = parts[0], domain = parts[1];
+        var parts = str.split("@"); var name = parts[0], domain = parts[1];
         if (name.length <= 2) return name[0] + "***@" + domain;
         return name.slice(0, 2) + "***" + name.slice(-1) + "@" + domain;
       } else {
@@ -386,63 +426,28 @@
       if (status === "Diproses") bClass = "status-diproses";
       if (status === "Selesai") bClass = "status-selesai";
       var maskedNama = maskStringData(nama, false);
-      var trackHtml = '<div class="track-row-item"><span>ID Transaksi:</span><strong style="color:#fff;">' + id + '</strong></div>' +
+      var trackHtml = '<div class="track-row-item"><span>ID Transaksi:</span><strong style="color: var(--brand-text);">' + id + '</strong></div>' +
         '<div class="track-row-item"><span>Waktu Masuk:</span><span>' + tgl + '</span></div>' +
         '<div class="track-row-item"><span>Nama Pelanggan:</span><span>' + maskedNama + ' <small style="color:var(--text-muted); font-size:0.7rem;">(Diblur)</small></span></div>' +
         '<div class="track-row-item"><span>Status Layanan:</span><span class="status-badge ' + bClass + '">' + status + '</span></div>';
       container.innerHTML = trackHtml; showToast("Invoice berhasil ditemukan!");
     }
 
-    /**
-     * ENGINE OTOMATISASI LAPORAN WHATSAPP: Mengirim rekap ringkas performa toko langsung ke chat WA Admin
-     */
     function generateWhatsappReportAdmin() {
-      if (!cacheTransactions || cacheTransactions.length === 0) {
-        showToast("Tidak ada data laporan transaksi!");
-        return;
-      }
-
-      var totalTransaksi = cacheTransactions.length;
-      var totalOmsetSukses = 0;
-      var hitungMenunggu = 0;
-      var hitungDiproses = 0;
-      var hitungSelesai = 0;
-
+      if (!cacheTransactions || cacheTransactions.length === 0) { showToast("Tidak ada data laporan transaksi!"); return; }
+      var totalTransaksi = cacheTransactions.length; var totalOmsetSukses = 0; var hitungMenunggu = 0; var hitungDiproses = 0; var hitungSelesai = 0;
       cacheTransactions.forEach(function(tx) {
-        var total = Number(tx[3]) || 0;
-        var status = tx[4] || "Menunggu";
-
+        var total = Number(tx[3]) || 0; var status = tx[4] || "Menunggu";
         if (status === "Menunggu") hitungMenunggu++;
         if (status === "Diproses") hitungDiproses++;
-        if (status === "Selesai") {
-          hitungSelesai++;
-          totalOmsetSukses += total; // Omset bersih dari transaksi berhasil
-        }
+        if (status === "Selesai") { hitungSelesai++; totalOmsetSukses += total; }
       });
-
-      // Menyusun format teks laporan indah khusus WhatsApp Messenger
-      var pesanLaporan = "*SAYUR PEDIA - LAPORAN KINERJA TOKO*\n" +
-        "====================================\n" +
-        "*Waktu Rekap:* " + new Date().toLocaleString('id-ID') + "\n" +
-        "*Total Order Masuk:* " + totalTransaksi + " Transaksi\n\n" +
-        "*RINGKASAN STATUS OPERASIONAL:*\n" +
-        "⏳ Menunggu: " + hitungMenunggu + " order\n" +
-        "⚙️ Diproses: " + hitungDiproses + " order\n" +
-        "✅ Selesai: " + hitungSelesai + " order\n\n" +
-        "====================================\n" +
-        "*TOTAL OMSET BERHASIL:* \n" +
-        "💰 *Rp " + totalOmsetSukses.toLocaleString('id-ID') + "*\n" +
-        "====================================\n" +
-        "_Laporan ini digenerate otomatis oleh sistem core Vercel Engine._";
-
-      showToast("Membuka WhatsApp Laporan...");
-      window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(pesanLaporan), '_blank');
+      var pesanLaporan = "*SAYUR PEDIA - LAPORAN KINERJA TOKO*\n====================================\n*Waktu Rekap:* " + new Date().toLocaleString('id-ID') + "\n*Total Order Masuk:* " + totalTransaksi + " Transaksi\n\n*RINGKASAN STATUS OPERASIONAL:*\n⏳ Menunggu: " + hitungMenunggu + " order\n⚙️ Diproses: " + hitungDiproses + " order\n✅ Selesai: " + hitungSelesai + " order\n\n====================================\n*TOTAL OMSET BERHASIL:* \n💰 *Rp " + totalOmsetSukses.toLocaleString('id-ID') + "*\n====================================\n_Laporan ini digenerate otomatis oleh sistem core Vercel Engine._";
+      showToast("Membuka WhatsApp Laporan..."); window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(pesanLaporan), '_blank');
     }
 
     function generateInvoicePdfReport() {
-      if (!cacheTransactions || cacheTransactions.length === 0) {
-        showToast("Tidak ada data transaksi untuk dicetak!"); return;
-      }
+      if (!cacheTransactions || cacheTransactions.length === 0) { showToast("Tidak ada data transaksi untuk dicetak!"); return; }
       showToast("Menyiapkan dokumen PDF...");
       var printWindow = window.open('', '_blank'); var tBodyHtml = ""; var grandTotalOmset = 0;
       cacheTransactions.forEach(function(tx) {
@@ -455,9 +460,7 @@
 
     function switchRole(role) {
       if (role === 'admin') {
-        if (sessionStorage.getItem("pedia_session_token")) {
-          currentRole = 'admin'; executeRoleVisualChange('admin'); return;
-        }
+        if (sessionStorage.getItem("pedia_session_token")) { currentRole = 'admin'; executeRoleVisualChange('admin'); return; }
         var inputPass = prompt("Masukkan Kunci Akses Kode Keamanan Admin:");
         if (!inputPass || inputPass.trim() === "") return;
         showToast("Memverifikasi kredensial...");
@@ -512,7 +515,7 @@
         var badgeClass = "status-menunggu";
         if (status === "Diproses") badgeClass = "status-diproses";
         if (status === "Selesai") badgeClass = "status-selesai";
-        var rowHtml = '<tr><td style="font-weight:700; color:#fff;">' + id + '</td><td>' + tgl + '</td><td>' + nama + '</td><td style="color:var(--accent); font-weight:600;">Rp ' + total.toLocaleString('id-ID') + '</td><td><select class="sel-status-inline ' + badgeClass + '" onchange="changeTxStatus(\'' + id + '\', this.value)"><option value="Menunggu" ' + mSel + '>Menunggu</option><option value="Diproses" ' + pSel + '>Diproses</option><option value="Selesai" ' + sSel + '>Selesai</option></select></td></tr>';
+        var rowHtml = '<tr><td style="font-weight:700; color: var(--brand-text);">' + id + '</td><td>' + tgl + '</td><td>' + nama + '</td><td style="color:var(--accent); font-weight:600;">Rp ' + total.toLocaleString('id-ID') + '</td><td><select class="sel-status-inline ' + badgeClass + '" onchange="changeTxStatus(\'' + id + '\', this.value)"><option value="Menunggu" ' + mSel + '>Menunggu</option><option value="Diproses" ' + pSel + '>Diproses</option><option value="Selesai" ' + sSel + '>Selesai</option></select></td></tr>';
         tbody.innerHTML += rowHtml;
       }
     }
@@ -528,6 +531,10 @@
     function buildAnalyticsCharts(transactions) {
       var omsetBulanan = { "Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "Mei": 0, "Jun": 0, "Jul": 0, "Agu": 0, "Sep": 0, "Okt": 0, "Nov": 0, "Des": 0 };
       var kontribusiProduk = { "YouTube": 0, "CapCut": 0, "Canva": 0, "Lainnya": 0 };
+      var isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      var dynamicLabelColor = isLight ? '#1f2937' : '#f3f4f6';
+      var dynamicGridColor = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.03)';
+
       transactions.forEach(function(tx) {
         var tglStr = tx[1]; var total = Number(tx[3]) || 0; var status = tx[4] || "Menunggu";
         if (status === "Selesai" || status === "Diproses") {
@@ -543,19 +550,18 @@
       if (omsetChartInstance) { omsetChartInstance.destroy(); }
       omsetChartInstance = new Chart(ctxLine, {
         type: 'line',
-        data: { labels: Object.keys(omsetBulanan), datasets: [{ label: 'Omset Selesai (Rp)', data: Object.values(omsetBulanan), borderColor: '#00ffaa', backgroundColor: 'rgba(0, 255, 170, 0.05)', borderWidth: 3, tension: 0.4, fill: true }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } }, y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af' } } } }
+        data: { labels: Object.keys(omsetBulanan), datasets: [{ label: 'Omset Selesai (Rp)', data: Object.values(omsetBulanan), borderColor: isLight ? '#00aa6c' : '#00ffaa', backgroundColor: isLight ? 'rgba(0,170,108,0.03)' : 'rgba(0, 255, 170, 0.05)', borderWidth: 3, tension: 0.4, fill: true }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: dynamicGridColor }, ticks: { color: dynamicLabelColor } }, y: { grid: { color: dynamicGridColor }, ticks: { color: dynamicLabelColor } } } }
       });
       var ctxPie = document.getElementById('produkPieChart').getContext('2d');
       if (produkChartInstance) { produkChartInstance.destroy(); }
       produkChartInstance = new Chart(ctxPie, {
         type: 'doughnut',
-        data: { labels: Object.keys(kontribusiProduk), datasets: [{ data: Object.values(kontribusiProduk), backgroundColor: ['#00ffaa', '#00bfff', '#ffaa00', '#ff4a5a'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#f3f4f6', font: { size: 10 } } } }, cutout: '70%' }
+        data: { labels: Object.keys(kontribusiProduk), datasets: [{ data: Object.values(kontribusiProduk), backgroundColor: [isLight ? '#00aa6c' : '#00ffaa', '#00bfff', '#ffaa00', '#ff4a5a'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: dynamicLabelColor, font: { size: 10 } } } }, cutout: '70%' }
       });
     }
 
-    function toggleCart(open) { document.getElementById('cartDrawer').classList.toggle('open', open); }
     function triggerSearch() { clearTimeout(searchTimeout); searchTimeout = setTimeout(function() { currentPage = 1; doGlobalFetch(); }, 400); }
 
     function doGlobalFetch() {
@@ -583,7 +589,7 @@
         if (currentRole === 'admin') {
           cardHtml += '<button class="btn-buy" onclick="openProductModal(\'' + id + '\')"><i class="fa-solid fa-sliders"></i> Edit Item</button>';
         } else {
-          cardHtml += (stok > 0) ? '<button class="btn-buy" onclick="addToCart(\'' + id + '\', \'' + safeNama + '\', ' + harga + ')"><i class="fa-solid fa-bolt-lightning"></i> Ambil Slot</button>' : '<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis Terjual</button>';
+          cardHtml += (stok > 0) ? '<button class="btn-buy" onclick="openUserOrderModal(\'' + id + '\', \'' + safeNama + '\', ' + harga + ', ' + stok + ')"><i class="fa-solid fa-bolt-lightning"></i> Ambil Slot</button>' : '<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis Terjual</button>';
         }
         cardHtml += '</div></div></div>'; grid.innerHTML += cardHtml;
       }
@@ -592,51 +598,54 @@
     function renderPaginationControls(current, total) {
       var box = document.getElementById('paginationBox'); box.innerHTML = ''; if (total <= 1) return;
       box.innerHTML += '<button class="btn-page" ' + (current === 1 ? 'disabled' : '') + ' onclick="changePage(' + (current - 1) + ')"><i class="fa-solid fa-angle-left"></i></button>';
-      box.innerHTML += '<span style="font-size:0.9rem; font-weight:600;">' + current + ' / ' + total + '</span>';
+      box.innerHTML += '<span style="font-size:0.9rem; font-weight:600; color:var(--brand-text);">' + current + ' / ' + total + '</span>';
       box.innerHTML += '<button class="btn-page" ' + (current === total ? 'disabled' : '') + ' onclick="changePage(' + (current + 1) + ')"><i class="fa-solid fa-angle-right"></i></button>';
     }
     function changePage(t) { currentPage = t; doGlobalFetch(); }
 
-    function addToCart(id, nama, harga) {
-      var stockEl = document.getElementById('stock-val-' + id); if (!stockEl) return;
-      var currStock = parseInt(stockEl.innerText, 10); if (currStock <= 0) return;
-      stockEl.innerText = currStock - 1;
-      var idx = cart.findIndex(function(i) { return i.id === id; });
-      if (idx !== -1) { cart[idx].qty += 1; } else { cart.push({ id: id, nama: nama, harga: harga, qty: 1 }); }
-      updateCartUi(); showToast(nama + " ditambahkan.");
+    function openUserOrderModal(id, nama, harga, stok) {
+      activeSingleSelection = { id: id, nama: nama, harga: harga, stok: stok };
+      currentModalQty = 1; // Reset kuantitas ke 1 tiap buka dialog
+      
+      document.getElementById('lblTargetItemName').innerText = nama;
+      document.getElementById('lblTargetItemPrice').innerText = "Harga Slot: Rp " + harga.toLocaleString('id-ID');
+      document.getElementById('txtModalQtyField').value = currentModalQty;
+      
+      document.getElementById('txtUserOrderName').value = "";
+      document.getElementById('txtUserOrderAddress').value = "";
+      document.getElementById('userOrderModal').classList.add('show');
     }
 
-    function updateCartQtyLocally(id, delta) {
-      var idx = cart.findIndex(function(i) { return i.id === id; }); if (idx === -1) return;
-      var stockEl = document.getElementById('stock-val-' + id);
-      if (stockEl) { stockEl.innerText = parseInt(stockEl.innerText, 10) - delta; }
-      cart[idx].qty += delta; if (cart[idx].qty <= 0) { cart.splice(idx, 1); }
-      updateCartUi();
+    function closeUserOrderModal() {
+      document.getElementById('userOrderModal').classList.remove('show'); activeSingleSelection = null;
     }
 
-    function updateCartUi() {
-      var listEl = document.getElementById('cartItemsList'), badgeEl = document.getElementById('cartBadge'), totalLabel = document.getElementById('cartTotalLabel');
-      listEl.innerHTML = ''; var total = 0, items = 0;
-      cart.forEach(function(i) {
-        total += (i.harga * i.qty); items += i.qty;
-        listEl.innerHTML += '<div class="cart-item"><div class="cart-item-info"><h4>' + i.nama + '</h4><p>Rp ' + (i.harga * i.qty).toLocaleString('id-ID') + '</p></div><div class="cart-qty-control"><button class="btn-qty" onclick="updateCartQtyLocally(\'' + i.id + '\', -1)">-</button><span style="font-weight:700;">' + i.qty + '</span><button class="btn-qty" onclick="updateCartQtyLocally(\'' + i.id + '\', 1)">+</button></div></div>';
-      });
-      badgeEl.innerText = items; totalLabel.innerText = 'Rp ' + total.toLocaleString('id-ID');
-    }
-
-    function processCheckout() {
-      if (cart.length === 0) return;
-      var name = document.getElementById('txtOrderName').value.trim(), mailNote = document.getElementById('txtOrderAddress').value.trim();
+    function executeDirectUserCheckout() {
+      if (!activeSingleSelection) return;
+      var name = document.getElementById('txtUserOrderName').value.trim();
+      var mailNote = document.getElementById('txtUserOrderAddress').value.trim();
       if (name === "" || mailNote === "") { showToast("Nama dan Keterangan wajib diisi!"); return; }
-      var total = 0; cart.forEach(function(c){ total += (c.harga * c.qty); });
+      
+      var calculatedTotalAmount = activeSingleSelection.harga * currentModalQty;
+      
+      // Inject kuantitas order dinamis pilihan pelanggan ke payload API
+      var temporaryCartPayload = [{
+        id: activeSingleSelection.id,
+        nama: activeSingleSelection.nama,
+        harga: activeSingleSelection.harga,
+        qty: currentModalQty
+      }];
 
-      callServerApi({ action: "checkout", name: name, total: total, cart: cart }, function(res) {
+      closeUserOrderModal(); showToast("Mengunci slot layanan...");
+
+      callServerApi({ 
+        action: "checkout", 
+        name: name, 
+        total: calculatedTotalAmount, 
+        cart: temporaryCartPayload 
+      }, function(res) {
         if(res.success) {
-          var text = "*SAYUR PEDIA - DIGITAL OUTLET INVOICE*\n====================================\n*ID Transaksi:* " + res.transactionId + "\n*Nama Pelanggan:* " + name + "\n*Target Kirim:* " + mailNote + "\n\n*Detail Akun Premium:*\n";
-          cart.forEach(function(item, x) { text += (x+1) + ". " + item.nama + " (" + item.qty + "x) -> Rp " + (item.harga * item.qty).toLocaleString('id-ID') + "\n"; });
-          text += "\n*Total Biaya:* Rp " + total.toLocaleString('id-ID') + "\n====================================\n*Status Pembayaran:* [ MENUNGGU KONFIRMASI MANUAL ADMIN ]\n\nMohon diinfokan nomor rekening transfer bank toko.";
-          cart = []; updateCartUi(); toggleCart(false);
-          document.getElementById('txtOrderName').value = ''; document.getElementById('txtOrderAddress').value = '';
+          var text = "*SAYUR PEDIA - DIGITAL OUTLET INVOICE*\n====================================\n*ID Transaksi:* " + res.transactionId + "\n*Nama Pelanggan:* " + name + "\n*Target Kirim:* " + mailNote + "\n\n*Detail Akun Premium:*\n1. " + activeSingleSelection.nama + " (" + currentModalQty + "x) -> Rp " + calculatedTotalAmount.toLocaleString('id-ID') + "\n\n*Total Biaya:* Rp " + calculatedTotalAmount.toLocaleString('id-ID') + "\n====================================\n*Status Pembayaran:* [ MENUNGGU KONFIRMASI MANUAL ADMIN ]\n\nMohon diinfokan nomor rekening transfer bank toko.";
           window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(text), '_blank');
           preloadTransactionCache(); doGlobalFetch();
         }

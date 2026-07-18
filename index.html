@@ -114,7 +114,6 @@
 </head>
 <body>
 
-  <!-- TEMPLETE UTAMA -->
   <header>
     <div class="brand"><i class="fa-solid fa-bolt" style="color:#00ffaa;"></i>SAYUR<span>PEDIA</span> <small>DIGITAL</small></div>
     <div class="nav-controls">
@@ -170,12 +169,8 @@
 
   <div class="toast" id="globalToast">Pesan Terkirim!</div>
 
-  <!-- JAVASCRIPT FOR ENGINE COUPLING -->
   <script>
-    // =========================================================================
-    // MANDATORY CONFIGURATION: SALIN LINK DEPLOYMENT SPREADSHEET ANDA DI SINI
-    // =========================================================================
-    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQp2U7hZcR6G4h6S_zNf_T_9h8MExAmPl_K7v1b8U/exec"; 
+    var APPS_SCRIPT_URL = "PASTE_LINK_EXEC_ANDA_DI_SINI"; 
     
     var currentRole = 'user';
     var currentPage = 1;
@@ -197,9 +192,6 @@
       setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
 
-    /**
-     * CORE DRIVER API: Melakukan Request POST Webhook ke Google Sheets secara Lintas Perangkat (Vercel Host)
-     */
     function callServerApi(payload, callback) {
       fetch(APPS_SCRIPT_URL, {
         method: "POST",

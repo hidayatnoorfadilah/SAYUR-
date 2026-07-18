@@ -87,8 +87,8 @@
       width: 100%; max-width: 500px; background: rgba(120,120,120,0.08); border: 1px solid var(--border);
       border-radius: 10px; padding: 1rem; display: none; text-align: left; font-size: 0.85rem;
     }
-    .track-row-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
-    .track-row-item:last-child { margin-bottom: 0; border: none; padding-bottom: 0; }
+    .track-result-box div { margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; display: flex; justify-content: space-between; }
+    .track-result-box div:last-child { margin-bottom: 0; border: none; padding-bottom: 0; }
 
     .filter-bar { background: var(--bg-card); border: 1px solid var(--border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
     .search-input-group { position: relative; width: 100%; }
@@ -148,6 +148,10 @@
     .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 74, 90, 0.3); }
     .btn-wa-report { background: var(--success); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
     .btn-wa-report:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+    
+    /* STYLE BUTTON RESET MANUAL ADMIN */
+    .btn-danger-reset { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
+    .btn-danger-reset:hover { background: var(--danger); color: white; transform: translateY(-2px); }
 
     .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 10, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem; }
     .modal-backdrop.show { opacity: 1; pointer-events: auto; }
@@ -155,10 +159,7 @@
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; color: var(--brand-text); }
     .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
 
-    /* LAYOUT SUB MODUL QUANTITY CONTROL DI POP-UP USER */
-    .qty-input-row {
-      display: flex; align-items: center; gap: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); padding: 0.4rem; border-radius: 8px; width: fit-content; margin-top: 0.4rem;
-    }
+    .qty-input-row { display: flex; align-items: center; gap: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); padding: 0.4rem; border-radius: 8px; width: fit-content; margin-top: 0.4rem; }
     .btn-modal-qty { background: rgba(120,120,120,0.15); border: none; color: var(--text-main); width: 30px; height: 30px; font-weight: 700; border-radius: 6px; cursor: pointer; }
     .input-modal-qty-val { border: none; background: transparent; color: var(--text-main); width: 45px; text-align: center; font-weight: 700; font-size: 0.95rem; }
 
@@ -233,6 +234,7 @@
       <div class="admin-action-header">
         <h3 style="color: var(--brand-text);"><i class="fa-solid fa-receipt" style="color:#00ffaa; margin-right:8px;"></i> Manajemen Status Transaksi Pelanggan</h3>
         <div class="admin-button-group">
+          <button class="btn-danger-reset" onclick="triggerManualResetTransactions()"><i class="fa-solid fa-trash-can"></i> Reset Riwayat</button>
           <button class="btn-wa-report" onclick="generateWhatsappReportAdmin()"><i class="fa-brands fa-whatsapp"></i> Laporan WhatsApp</button>
           <button class="btn-pdf" onclick="generateInvoicePdfReport()"><i class="fa-solid fa-file-pdf"></i> Unduh Laporan PDF</button>
         </div>
@@ -256,7 +258,6 @@
 
   </div>
 
-  <!-- POP-UP DIALOG CHECKOUT DENGAN TAMBAHAN INPUT JUMLAH QUANTITY SLOT -->
   <div class="modal-backdrop" id="userOrderModal">
     <div class="modal-window">
       <div class="modal-header">
@@ -268,7 +269,6 @@
         <strong id="lblTargetItemName" style="font-size:1rem; color: var(--brand-text);">Nama Akun</strong>
         <span id="lblTargetItemPrice" style="font-size:0.9rem; color:var(--accent); font-weight:700; display:block; margin-top:2px;">Rp 0</span>
         
-        <!-- SUB INPUT KUANTITAS DINAMIS -->
         <div style="margin-top: 0.75rem; border-top: 1px dashed var(--border); padding-top: 0.6rem;">
           <span style="font-size:0.7rem; color:var(--text-muted); display:block; text-transform:uppercase; margin-bottom:2px;">Tentukan Jumlah Slot:</span>
           <div class="qty-input-row">
@@ -319,7 +319,7 @@
     var WHATSAPP_ADMIN_NUMBER = "6285888011755";
     
     var activeSingleSelection = null;
-    var currentModalQty = 1; // Counter jumlah kuantitas lokal
+    var currentModalQty = 1;
 
     var omsetChartInstance = null;
     var produkChartInstance = null;
@@ -340,24 +340,14 @@
       setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
 
-    /**
-     * MENGATUR COUNTER KUANTITAS SLOT SECARA REAL-TIME DI DALAM POP-UP
-     */
     function adjustModalQtyValue(delta) {
       if (!activeSingleSelection) return;
       var maxAvailableStock = activeSingleSelection.stok;
       var nextQty = currentModalQty + delta;
-      
       if (nextQty < 1) return;
-      if (nextQty > maxAvailableStock) {
-        showToast("Slot maksimal yang tersedia saat ini adalah " + maxAvailableStock + "!");
-        return;
-      }
-      
+      if (nextQty > maxAvailableStock) { showToast("Slot maksimal yang tersedia adalah " + maxAvailableStock + "!"); return; }
       currentModalQty = nextQty;
       document.getElementById('txtModalQtyField').value = currentModalQty;
-      
-      // Update label harga akumulasi secara live
       var computedTotalPrice = activeSingleSelection.harga * currentModalQty;
       document.getElementById('lblTargetItemPrice').innerText = "Total Harga (" + currentModalQty + "x): Rp " + computedTotalPrice.toLocaleString('id-ID');
     }
@@ -390,6 +380,8 @@
           google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).getTransactionsBackend(payload.token);
         } else if (payload.action === "updateTransactionStatus") {
           google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).updateTransactionStatusBackend(payload.id, payload.status, payload.token);
+        } else if (payload.action === "resetTransactions") {
+          google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).resetTransactionsBackend(payload.token);
         }
       } 
       else {
@@ -426,11 +418,29 @@
       if (status === "Diproses") bClass = "status-diproses";
       if (status === "Selesai") bClass = "status-selesai";
       var maskedNama = maskStringData(nama, false);
-      var trackHtml = '<div class="track-row-item"><span>ID Transaksi:</span><strong style="color: var(--brand-text);">' + id + '</strong></div>' +
-        '<div class="track-row-item"><span>Waktu Masuk:</span><span>' + tgl + '</span></div>' +
-        '<div class="track-row-item"><span>Nama Pelanggan:</span><span>' + maskedNama + ' <small style="color:var(--text-muted); font-size:0.7rem;">(Diblur)</small></span></div>' +
-        '<div class="track-row-item"><span>Status Layanan:</span><span class="status-badge ' + bClass + '">' + status + '</span></div>';
+      var trackHtml = '<div><span>ID Transaksi:</span><strong style="color: var(--brand-text);">' + id + '</strong></div>' +
+        '<div><span>Waktu Masuk:</span><span>' + tgl + '</span></div>' +
+        '<div><span>Nama Pelanggan:</span><span>' + maskedNama + ' <small style="color:var(--text-muted); font-size:0.7rem;">(Diblur)</small></span></div>' +
+        '<div><span>Status Layanan:</span><span class="status-badge ' + bClass + '">' + status + '</span></div>';
       container.innerHTML = trackHtml; showToast("Invoice berhasil ditemukan!");
+    }
+
+    /**
+     * RESET MANUAL: Trigger konfirmasi ganda sebelum eksekusi pembersihan baris Sheets
+     */
+    function triggerManualResetTransactions() {
+      var token = sessionStorage.getItem("pedia_session_token") || "";
+      if (!token) return;
+      
+      if (confirm("Peringatan: Anda akan menghapus SELURUH riwayat transaksi di Google Sheets secara permanen! Lanjutkan?")) {
+        if (confirm("Apakah Anda benar-benar yakin? Tindakan ini tidak dapat dibatalkan.")) {
+          showToast("Sedang mereset riwayat database...");
+          callServerApi({ action: "resetTransactions", token: token }, function(res) {
+            showToast(res.message);
+            fetchAdminTransactions();
+          });
+        }
+      }
     }
 
     function generateWhatsappReportAdmin() {
@@ -605,12 +615,10 @@
 
     function openUserOrderModal(id, nama, harga, stok) {
       activeSingleSelection = { id: id, nama: nama, harga: harga, stok: stok };
-      currentModalQty = 1; // Reset kuantitas ke 1 tiap buka dialog
-      
+      currentModalQty = 1;
       document.getElementById('lblTargetItemName').innerText = nama;
       document.getElementById('lblTargetItemPrice').innerText = "Harga Slot: Rp " + harga.toLocaleString('id-ID');
       document.getElementById('txtModalQtyField').value = currentModalQty;
-      
       document.getElementById('txtUserOrderName').value = "";
       document.getElementById('txtUserOrderAddress').value = "";
       document.getElementById('userOrderModal').classList.add('show');
@@ -627,8 +635,6 @@
       if (name === "" || mailNote === "") { showToast("Nama dan Keterangan wajib diisi!"); return; }
       
       var calculatedTotalAmount = activeSingleSelection.harga * currentModalQty;
-      
-      // Inject kuantitas order dinamis pilihan pelanggan ke payload API
       var temporaryCartPayload = [{
         id: activeSingleSelection.id,
         nama: activeSingleSelection.nama,

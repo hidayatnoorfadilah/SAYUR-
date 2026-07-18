@@ -169,8 +169,9 @@
 
   <div class="toast" id="globalToast">Pesan Terkirim!</div>
 
+  <!-- JAVASCRIPT SYSTEM CONTROLLER -->
   <script>
-    var APPS_SCRIPT_URL = "PASTE_LINK_EXEC_ANDA_DI_SINI"; 
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx052L7JBQFot_fTf_ElISxnxli77924GarqDcjEDwMnEbtsKRcFJ-ca-pOvYrsQkGCpA/exec"; 
     
     var currentRole = 'user';
     var currentPage = 1;
@@ -193,15 +194,30 @@
     }
 
     function callServerApi(payload, callback) {
-      fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(data) { callback(data); })
-      .catch(function(err) { console.error(err); showToast("Koneksi API Gagal!"); });
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        if (payload.action === "getProducts") {
+          google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).getProductsBackend(payload.search, payload.category, payload.page, payload.limit);
+        } else if (payload.action === "verifyPassword") {
+          google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).verifyAdminPasswordBackend(payload.password);
+        } else if (payload.action === "saveProduct") {
+          google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).saveProductBackend(JSON.stringify(payload.payload), payload.token);
+        } else if (payload.action === "deleteProduct") {
+          google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).deleteProductBackend(payload.id, payload.token);
+        } else if (payload.action === "checkout") {
+          google.script.run.withSuccessHandler(function(res){ callback(JSON.parse(res)); }).checkoutBackend(payload.name, payload.total, JSON.stringify(payload.cart));
+        }
+      } 
+      else {
+        fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) { callback(data); })
+        .catch(function(err) { console.error(err); showToast("Koneksi API Gagal!"); });
+      }
     }
 
     function switchRole(role) {

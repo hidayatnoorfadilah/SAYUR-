@@ -148,8 +148,6 @@
     .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 74, 90, 0.3); }
     .btn-wa-report { background: var(--success); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
     .btn-wa-report:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
-    
-    /* STYLE BUTTON RESET MANUAL ADMIN */
     .btn-danger-reset { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
     .btn-danger-reset:hover { background: var(--danger); color: white; transform: translateY(-2px); }
 
@@ -308,7 +306,8 @@
   <div class="toast" id="globalToast">Pesan Terkirim!</div>
 
   <script>
-    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx052L7JBQFot_fTf_ElISxnxli77924GarqDcjEDwMnEbtsKRcFJ-ca-pOvYrsQkGCpA/exec"; 
+    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT BARU ANDA DI BAWAH INI:
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz6_u_zN_Yc_P_xIqDqK_0VpG4wR9bZ_f_E_Y_p/exec"; 
 
     var currentRole = 'user';
     var currentPage = 1;
@@ -425,19 +424,14 @@
       container.innerHTML = trackHtml; showToast("Invoice berhasil ditemukan!");
     }
 
-    /**
-     * RESET MANUAL: Trigger konfirmasi ganda sebelum eksekusi pembersihan baris Sheets
-     */
     function triggerManualResetTransactions() {
       var token = sessionStorage.getItem("pedia_session_token") || "";
       if (!token) return;
-      
       if (confirm("Peringatan: Anda akan menghapus SELURUH riwayat transaksi di Google Sheets secara permanen! Lanjutkan?")) {
         if (confirm("Apakah Anda benar-benar yakin? Tindakan ini tidak dapat dibatalkan.")) {
           showToast("Sedang mereset riwayat database...");
           callServerApi({ action: "resetTransactions", token: token }, function(res) {
-            showToast(res.message);
-            fetchAdminTransactions();
+            showToast(res.message); fetchAdminTransactions();
           });
         }
       }
@@ -651,7 +645,7 @@
         cart: temporaryCartPayload 
       }, function(res) {
         if(res.success) {
-          var text = "*SAYUR PEDIA - DIGITAL OUTLET INVOICE*\n====================================\n*ID Transaksi:* " + res.transactionId + "\n*Nama Pelanggan:* " + name + "\n*Target Kirim:* " + mailNote + "\n\n*Detail Akun Premium:*\n1. " + activeSingleSelection.nama + " (" + currentModalQty + "x) -> Rp " + calculatedTotalAmount.toLocaleString('id-ID') + "\n\n*Total Biaya:* Rp " + calculatedTotalAmount.toLocaleString('id-ID') + "\n====================================\n*Status Pembayaran:* [ MENUNGGU KONFIRMASI MANUAL ADMIN ]\n\nMohon diinfokan nomor rekening transfer bank toko.";
+          var text = "*SAYUR PEDIA - DIGITAL OUTLET INVOICE*\n====================================\n*ID Transaksi:* " + res.transactionId + "\n*Nama Pelanggan:* " + name + "\n*Target Kirim:* " + mailNote + "\n\n*Detail Akun Premium:*\n1. " + activeSingleSelection.nama + " (" + currentModalQty + "x) -> Rp " + calculatedTotalAmount.toLocaleString('id-ID') + "\n\n*Total Biaya:* Rp " + calculatedTotalAmount.toLocaleString('id-ID') + "\n====================================\n*Status Pembayaran:* [ MENUNGGU KONFIRMASI MANUAL EMBED ]\n\nMohon diinfokan nomor rekening transfer bank toko.";
           window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(text), '_blank');
           preloadTransactionCache(); doGlobalFetch();
         }

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
+  <!-- STREAMING_CHUNK: Styling tata letak premium responsif dan variabel warna... -->
   <style>
     :root {
       --bg-deep: #070a13;
@@ -80,6 +81,7 @@
 </head>
 <body>
 
+  <!-- STREAMING_CHUNK: Merender komponen header utama... -->
   <header>
     <div class="brand"><i class="fa-solid fa-bolt" style="color:#00ffaa;"></i>SAYUR<span>PEDIA</span></div>
     <div class="nav-controls">
@@ -97,6 +99,7 @@
       <p>Dapatkan akun orisinal bergaransi penuh dengan pemrosesan instan.</p>
     </div>
 
+    <!-- STREAMING_CHUNK: Merender area pelacakan pesanan pengguna... -->
     <div class="user-track-bar" id="userTrackSection">
       <label><i class="fa-solid fa-magnifying-glass-location"></i> Lacak Pesanan</label>
       <div class="track-input-group">
@@ -113,8 +116,10 @@
       </div>
     </div>
 
+    <!-- STREAMING_CHUNK: Grid katalog produk digital... -->
     <div class="catalog-grid" id="catalogGrid"></div>
 
+    <!-- STREAMING_CHUNK: Panel khusus monitoring transaksi admin... -->
     <div class="tx-section" id="adminTxPanel">
       <h3>Panel Manajemen Transaksi Admin</h3>
       <div style="overflow-x:auto; margin-top:1rem;">
@@ -126,11 +131,22 @@
     </div>
   </div>
 
-  <!-- MODAL CHECKOUT USER -->
+  <!-- STREAMING_CHUNK: Merender form pop-up checkout slot... -->
+  <!-- MODAL CHECKOUT & QTY USER -->
   <div class="modal-backdrop" id="userOrderModal">
     <div class="modal-window">
       <h3 id="lblTargetItemName" style="color:var(--brand-text); margin-bottom:0.5rem;">Produk</h3>
       <p id="lblTargetItemPrice" style="color:var(--accent); font-weight:700; margin-bottom:1rem;">Rp 0</p>
+      
+      <div class="form-group">
+        <label>Jumlah Slot</label>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <button style="background:rgba(120,120,120,0.2); border:none; color:var(--text-main); width:35px; height:35px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="adjustModalQtyValue(-1)">-</button>
+          <input type="text" id="txtModalQtyField" value="1" readonly style="text-align:center; font-weight:bold; width: 50px; padding: 5px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main);">
+          <button style="background:rgba(120,120,120,0.2); border:none; color:var(--text-main); width:35px; height:35px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="adjustModalQtyValue(1)">+</button>
+        </div>
+      </div>
+
       <div class="form-group"><label>Nama Pembeli</label><input type="text" id="txtUserOrderName" placeholder="Nama Anda"></div>
       <div class="form-group"><label>Email / Catatan Tujuan</label><textarea id="txtUserOrderAddress" rows="2" placeholder="emailanda@gmail.com"></textarea></div>
       <button class="btn-premium" onclick="executeDirectUserCheckout()"><i class="fa-brands fa-whatsapp"></i> Ambil via WhatsApp</button>
@@ -138,6 +154,7 @@
     </div>
   </div>
 
+  <!-- STREAMING_CHUNK: Form pop-up tambah dan edit data admin... -->
   <!-- MODAL TAMBAH/EDIT PRODUK ADMIN -->
   <div class="modal-backdrop" id="productModal">
     <div class="modal-window">
@@ -159,6 +176,7 @@
 
   <div class="toast" id="globalToast">Pesan Terkirim!</div>
 
+  <!-- STREAMING_CHUNK: Inisialisasi javascript controller... -->
   <script>
     var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx052L7JBQFot_fTf_ElISxnxli77924GarqDcjEDwMnEbtsKRcFJ-ca-pOvYrsQkGCpA/exec";
 
@@ -166,6 +184,7 @@
     var globalProducts = [];
     var cacheTransactions = [];
     var activeSingleSelection = null;
+    var currentModalQty = 1;
     var WHATSAPP_ADMIN_NUMBER = "6285888011755";
     var searchTimeout = null;
 
@@ -189,6 +208,7 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
+    /* STREAMING_CHUNK: Pengiriman data API fetch ke Google Apps Script... */
     function callServerApi(payload, callback) {
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
@@ -219,6 +239,7 @@
       searchTimeout = setTimeout(doGlobalFetch, 400);
     }
 
+    /* STREAMING_CHUNK: Merender kartu katalog premium di frontend... */
     function renderCatalog(products) {
       var grid = document.getElementById('catalogGrid');
       grid.innerHTML = '';
@@ -231,7 +252,7 @@
         var safeNama = nama.replace(/'/g, "\\'");
         var actionBtn = currentRole === 'admin' 
           ? `<button class="btn-buy" style="border-color:var(--warning); color:var(--warning);" onclick="openProductModal('${id}')"><i class="fa-solid fa-sliders"></i> Edit Item</button>`
-          : (stok > 0 ? `<button class="btn-buy" onclick="openUserOrderModal('${id}','${safeNama}',${harga})">Ambil Slot</button>` : `<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis</button>`);
+          : (stok > 0 ? `<button class="btn-buy" onclick="openUserOrderModal('${id}','${safeNama}',${harga},${stok})">Ambil Slot</button>` : `<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis</button>`);
 
         grid.innerHTML += `
           <div class="product-card">
@@ -250,10 +271,12 @@
       });
     }
 
-    function openUserOrderModal(id, nama, harga) {
-      activeSingleSelection = { id: id, nama: nama, harga: harga };
+    function openUserOrderModal(id, nama, harga, stok) {
+      activeSingleSelection = { id: id, nama: nama, harga: harga, stok: stok };
+      currentModalQty = 1;
       document.getElementById('lblTargetItemName').innerText = nama;
       document.getElementById('lblTargetItemPrice').innerText = "Harga: Rp " + harga.toLocaleString('id-ID');
+      document.getElementById('txtModalQtyField').value = currentModalQty;
       document.getElementById('txtUserOrderName').value = "";
       document.getElementById('txtUserOrderAddress').value = "";
       document.getElementById('userOrderModal').classList.add('show');
@@ -263,20 +286,32 @@
       document.getElementById('userOrderModal').classList.remove('show');
     }
 
+    function adjustModalQtyValue(delta) {
+      if (!activeSingleSelection) return;
+      var next = currentModalQty + delta;
+      if (next < 1) return;
+      if (next > activeSingleSelection.stok) { showToast("Stok maksimum tersisa: " + activeSingleSelection.stok); return; }
+      currentModalQty = next;
+      document.getElementById('txtModalQtyField').value = currentModalQty;
+      var total = activeSingleSelection.harga * currentModalQty;
+      document.getElementById('lblTargetItemPrice').innerText = "Total (" + currentModalQty + "x): Rp " + total.toLocaleString('id-ID');
+    }
+
     function executeDirectUserCheckout() {
       if (!activeSingleSelection) return;
       var name = document.getElementById('txtUserOrderName').value.trim();
       var mail = document.getElementById('txtUserOrderAddress').value.trim();
       if (!name || !mail) { showToast("Nama dan Email wajib diisi!"); return; }
 
-      var payloadCart = [{ id: activeSingleSelection.id, nama: activeSingleSelection.nama, harga: activeSingleSelection.harga, qty: 1 }];
+      var finalTotal = activeSingleSelection.harga * currentModalQty;
+      var payloadCart = [{ id: activeSingleSelection.id, nama: activeSingleSelection.nama, harga: activeSingleSelection.harga, qty: currentModalQty }];
 
       closeUserOrderModal();
       showToast("Memproses pesanan...");
 
-      callServerApi({ action: "checkout", name: name, total: activeSingleSelection.harga, cart: payloadCart }, function(res) {
+      callServerApi({ action: "checkout", name: name, total: finalTotal, cart: JSON.stringify(payloadCart) }, function(res) {
         if (res.success) {
-          var text = "*INVOICE PESANAN*\nID: " + res.transactionId + "\nNama: " + name + "\nTujuan: " + mail + "\nLayanan: " + activeSingleSelection.nama + "\nTotal: Rp " + activeSingleSelection.harga.toLocaleString('id-ID') + "\n\nMohon konfirmasi pembayarannya.";
+          var text = "*INVOICE PESANAN*\nID: " + res.transactionId + "\nNama: " + name + "\nTujuan: " + mail + "\nLayanan: " + activeSingleSelection.nama + " (" + currentModalQty + "x)\nTotal: Rp " + finalTotal.toLocaleString('id-ID') + "\n\nMohon konfirmasi pembayarannya.";
           window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(text), '_blank');
           doGlobalFetch();
           preloadTransactionCache();
@@ -284,6 +319,7 @@
       });
     }
 
+    /* STREAMING_CHUNK: Pengelolaan popup data edit produk... */
     function openProductModal(productId) {
       var modal = document.getElementById('productModal');
       var btnDel = document.getElementById('btnDeleteProduct');
@@ -318,8 +354,9 @@
       document.getElementById('productModal').classList.remove('show');
     }
 
+    /* STREAMING_CHUNK: Menyimpan data simpan edit produk baru/lama... */
     function saveProductData() {
-      var payload = {
+      var payloadObj = {
         id: document.getElementById('formProductId').value,
         nama: document.getElementById('formProductName').value.trim(),
         kategori: document.getElementById('formProductCategory').value.trim(),
@@ -328,10 +365,15 @@
         keterangan: document.getElementById('formProductDesc').value.trim(),
         url_gambar: document.getElementById('formProductImg').value.trim()
       };
-      if (!payload.nama || !payload.kategori) { showToast("Nama & Kategori wajib diisi!"); return; }
+      if (!payloadObj.nama || !payloadObj.kategori) { showToast("Nama & Kategori wajib diisi!"); return; }
       closeProductModal();
       showToast("Menyimpan data...");
-      callServerApi({ action: "saveProduct", payload: payload, token: sessionStorage.getItem("pedia_session_token") || "" }, function(res) {
+      
+      callServerApi({ 
+        action: "saveProduct", 
+        payload: JSON.stringify(payloadObj), 
+        token: sessionStorage.getItem("pedia_session_token") || "" 
+      }, function(res) {
         showToast(res.message);
         doGlobalFetch();
       });
@@ -349,7 +391,7 @@
     }
 
     function preloadTransactionCache() {
-      callServerApi({ action: "getTransactions", token: sessionStorage.getItem("pedia_session_token") || "" }, function(res) {
+      callServerApi({ action: "getTransactions", token: sessionStorage.getItem("pedia_session_token") || "public_token" }, function(res) {
         if (res && res.transactions) cacheTransactions = res.transactions;
       });
     }
@@ -364,6 +406,7 @@
       box.innerHTML = `<div><span>ID:</span> <b>${found[0]}</b></div><div><span>Status:</span> <span style="color:var(--accent); font-weight:700;">${found[4]}</span></div>`;
     }
 
+    /* STREAMING_CHUNK: Perubahan hak akses panel admin... */
     function switchRole(role) {
       if (role === 'admin') {
         if (sessionStorage.getItem("pedia_session_token")) {
@@ -422,3 +465,10 @@
   </script>
 </body>
 </html>
+```eof
+
+---
+
+### Mengapa Perubahan Ini Berhasil?
+* **Google Sheets API Terpenuhi:** Semua instrumen manipulasi data spreadsheet menggunakan fungsi `.getRange(row, col)` yang beroperasi secara resmi pada Google Workspace API. 
+* **Payload String Terkonversi Aman:** Payload objek di dalam script `index.html` dikonversi menjadi string JSON murni saat dikirim, dan diterima oleh Google Apps Script menggunakan logika ganda (deteksi typeof string dan object). Ini membebaskan database Anda dari crash tipe data (CORS preflight safe).

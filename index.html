@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- STREAMING_CHUNK: Styling tata letak premium responsif dan variabel warna... -->
   <style>
     :root {
       --bg-deep: #070a13;
@@ -68,6 +67,13 @@
     .tx-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-top: 3rem; display: none; }
     .tx-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
     .tx-table th, .tx-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+    
+    .status-badge { padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; display: inline-block; }
+    .status-menunggu { background: rgba(255, 170, 0, 0.15); color: var(--warning); }
+    .status-diproses { background: rgba(0, 191, 255, 0.15); color: #00bfff; }
+    .status-selesai { background: rgba(0, 255, 170, 0.15); color: var(--accent); }
+    .sel-status-inline { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 0.2rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+
     .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 10, 0.6); backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem; }
     .modal-backdrop.show { opacity: 1; pointer-events: auto; }
     .modal-window { background: var(--bg-card-hover); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 450px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
@@ -81,7 +87,6 @@
 </head>
 <body>
 
-  <!-- STREAMING_CHUNK: Merender komponen header utama... -->
   <header>
     <div class="brand"><i class="fa-solid fa-bolt" style="color:#00ffaa;"></i>SAYUR<span>PEDIA</span></div>
     <div class="nav-controls">
@@ -99,7 +104,6 @@
       <p>Dapatkan akun orisinal bergaransi penuh dengan pemrosesan instan.</p>
     </div>
 
-    <!-- STREAMING_CHUNK: Merender area pelacakan pesanan pengguna... -->
     <div class="user-track-bar" id="userTrackSection">
       <label><i class="fa-solid fa-magnifying-glass-location"></i> Lacak Pesanan</label>
       <div class="track-input-group">
@@ -116,10 +120,8 @@
       </div>
     </div>
 
-    <!-- STREAMING_CHUNK: Grid katalog produk digital... -->
     <div class="catalog-grid" id="catalogGrid"></div>
 
-    <!-- STREAMING_CHUNK: Panel khusus monitoring transaksi admin... -->
     <div class="tx-section" id="adminTxPanel">
       <h3>Panel Manajemen Transaksi Admin</h3>
       <div style="overflow-x:auto; margin-top:1rem;">
@@ -131,8 +133,7 @@
     </div>
   </div>
 
-  <!-- STREAMING_CHUNK: Merender form pop-up checkout slot... -->
-  <!-- MODAL CHECKOUT & QTY USER -->
+  <!-- MODAL CHECKOUT USER -->
   <div class="modal-backdrop" id="userOrderModal">
     <div class="modal-window">
       <h3 id="lblTargetItemName" style="color:var(--brand-text); margin-bottom:0.5rem;">Produk</h3>
@@ -154,7 +155,6 @@
     </div>
   </div>
 
-  <!-- STREAMING_CHUNK: Form pop-up tambah dan edit data admin... -->
   <!-- MODAL TAMBAH/EDIT PRODUK ADMIN -->
   <div class="modal-backdrop" id="productModal">
     <div class="modal-window">
@@ -176,7 +176,6 @@
 
   <div class="toast" id="globalToast">Pesan Terkirim!</div>
 
-  <!-- STREAMING_CHUNK: Inisialisasi javascript controller... -->
   <script>
     var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx052L7JBQFot_fTf_ElISxnxli77924GarqDcjEDwMnEbtsKRcFJ-ca-pOvYrsQkGCpA/exec";
 
@@ -208,7 +207,6 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    /* STREAMING_CHUNK: Pengiriman data API fetch ke Google Apps Script... */
     function callServerApi(payload, callback) {
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
@@ -239,7 +237,6 @@
       searchTimeout = setTimeout(doGlobalFetch, 400);
     }
 
-    /* STREAMING_CHUNK: Merender kartu katalog premium di frontend... */
     function renderCatalog(products) {
       var grid = document.getElementById('catalogGrid');
       grid.innerHTML = '';
@@ -319,7 +316,6 @@
       });
     }
 
-    /* STREAMING_CHUNK: Pengelolaan popup data edit produk... */
     function openProductModal(productId) {
       var modal = document.getElementById('productModal');
       var btnDel = document.getElementById('btnDeleteProduct');
@@ -354,7 +350,6 @@
       document.getElementById('productModal').classList.remove('show');
     }
 
-    /* STREAMING_CHUNK: Menyimpan data simpan edit produk baru/lama... */
     function saveProductData() {
       var payloadObj = {
         id: document.getElementById('formProductId').value,
@@ -406,7 +401,6 @@
       box.innerHTML = `<div><span>ID:</span> <b>${found[0]}</b></div><div><span>Status:</span> <span style="color:var(--accent); font-weight:700;">${found[4]}</span></div>`;
     }
 
-    /* STREAMING_CHUNK: Perubahan hak akses panel admin... */
     function switchRole(role) {
       if (role === 'admin') {
         if (sessionStorage.getItem("pedia_session_token")) {
@@ -457,18 +451,41 @@
             return;
           }
           res.transactions.forEach(tx => {
-            tbody.innerHTML += `<tr><td><b>${tx[0]}</b></td><td>${tx[1]}</td><td>${tx[2]}</td><td>Rp ${Number(tx[3]).toLocaleString('id-ID')}</td><td><span style="color:var(--accent); font-weight:700;">${tx[4]}</span></td></tr>`;
+            var id = tx[0], tgl = tx[1], nama = tx[2], total = Number(tx[3]), status = tx[4] || "Menunggu";
+            var mSel = status === "Menunggu" ? "selected" : "";
+            var pSel = status === "Diproses" ? "selected" : "";
+            var sSel = status === "Selesai" ? "selected" : "";
+            var badgeClass = "status-menunggu";
+            if (status === "Diproses") badgeClass = "status-diproses";
+            if (status === "Selesai") badgeClass = "status-selesai";
+
+            tbody.innerHTML += `
+              <tr>
+                <td><b>${id}</b></td>
+                <td>${tgl}</td>
+                <td>${nama}</td>
+                <td style="color:var(--accent); font-weight:700;">Rp ${total.toLocaleString('id-ID')}</td>
+                <td>
+                  <select class="sel-status-inline ${badgeClass}" onchange="changeTxStatus('${id}', this.value)">
+                    <option value="Menunggu" ${mSel}>Menunggu</option>
+                    <option value="Diproses" ${pSel}>Diproses</option>
+                    <option value="Selesai" ${sSel}>Selesai</option>
+                  </select>
+                </td>
+              </tr>`;
           });
         }
+      });
+    }
+
+    function changeTxStatus(id, newStatus) {
+      var token = sessionStorage.getItem("pedia_session_token") || "";
+      showToast("Memperbarui status " + id + "...");
+      callServerApi({ action: "updateTransactionStatus", id: id, status: newStatus, token: token }, function(res) {
+        showToast(res.message);
+        fetchAdminTransactions();
       });
     }
   </script>
 </body>
 </html>
-```eof
-
----
-
-### Mengapa Perubahan Ini Berhasil?
-* **Google Sheets API Terpenuhi:** Semua instrumen manipulasi data spreadsheet menggunakan fungsi `.getRange(row, col)` yang beroperasi secara resmi pada Google Workspace API. 
-* **Payload String Terkonversi Aman:** Payload objek di dalam script `index.html` dikonversi menjadi string JSON murni saat dikirim, dan diterima oleh Google Apps Script menggunakan logika ganda (deteksi typeof string dan object). Ini membebaskan database Anda dari crash tipe data (CORS preflight safe).

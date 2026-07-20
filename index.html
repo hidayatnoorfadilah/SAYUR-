@@ -126,11 +126,21 @@
     </div>
   </div>
 
-  <!-- MODAL CHECKOUT USER -->
+  <!-- MODAL CHECKOUT & QTY USER -->
   <div class="modal-backdrop" id="userOrderModal">
     <div class="modal-window">
       <h3 id="lblTargetItemName" style="color:var(--brand-text); margin-bottom:0.5rem;">Produk</h3>
       <p id="lblTargetItemPrice" style="color:var(--accent); font-weight:700; margin-bottom:1rem;">Rp 0</p>
+      
+      <div class="form-group">
+        <label>Jumlah Slot</label>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <button style="background:rgba(120,120,120,0.2); border:none; color:var(--text-main); width:35px; height:35px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="adjustModalQtyValue(-1)">-</button>
+          <input type="text" id="txtModalQtyField" value="1" readonly style="text-align:center; font-weight:bold;">
+          <button style="background:rgba(120,120,120,0.2); border:none; color:var(--text-main); width:35px; height:35px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="adjustModalQtyValue(1)">+</button>
+        </div>
+      </div>
+
       <div class="form-group"><label>Nama Pembeli</label><input type="text" id="txtUserOrderName" placeholder="Nama Anda"></div>
       <div class="form-group"><label>Email / Catatan Tujuan</label><textarea id="txtUserOrderAddress" rows="2" placeholder="emailanda@gmail.com"></textarea></div>
       <button class="btn-premium" onclick="executeDirectUserCheckout()"><i class="fa-brands fa-whatsapp"></i> Ambil via WhatsApp</button>
@@ -166,6 +176,7 @@
     var globalProducts = [];
     var cacheTransactions = [];
     var activeSingleSelection = null;
+    var currentModalQty = 1;
     var WHATSAPP_ADMIN_NUMBER = "6285888011755";
     var searchTimeout = null;
 
@@ -231,7 +242,7 @@
         var safeNama = nama.replace(/'/g, "\\'");
         var actionBtn = currentRole === 'admin' 
           ? `<button class="btn-buy" style="border-color:var(--warning); color:var(--warning);" onclick="openProductModal('${id}')"><i class="fa-solid fa-sliders"></i> Edit Item</button>`
-          : (stok > 0 ? `<button class="btn-buy" onclick="openUserOrderModal('${id}','${safeNama}',${harga})">Ambil Slot</button>` : `<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis</button>`);
+          : (stok > 0 ? `<button class="btn-buy" onclick="openUserOrderModal('${id}','${safeNama}',${harga},${stok})">Ambil Slot</button>` : `<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis</button>`);
 
         grid.innerHTML += `
           <div class="product-card">
@@ -250,10 +261,12 @@
       });
     }
 
-    function openUserOrderModal(id, nama, harga) {
-      activeSingleSelection = { id: id, nama: nama, harga: harga };
+    function openUserOrderModal(id, nama, harga, stok) {
+      activeSingleSelection = { id: id, nama: nama, harga: harga, stok: stok };
+      currentModalQty = 1;
       document.getElementById('lblTargetItemName').innerText = nama;
       document.getElementById('lblTargetItemPrice').innerText = "Harga: Rp " + harga.toLocaleString('id-ID');
+      document.getElementById('txtModalQtyField').value = currentModalQty;
       document.getElementById('txtUserOrderName').value = "";
       document.getElementById('txtUserOrderAddress').value = "";
       document.getElementById('userOrderModal').classList.add('show');
@@ -263,20 +276,32 @@
       document.getElementById('userOrderModal').classList.remove('show');
     }
 
+    function adjustModalQtyValue(delta) {
+      if (!activeSingleSelection) return;
+      var next = currentModalQty + delta;
+      if (next < 1) return;
+      if (next > activeSingleSelection.stok) { showToast("Stok maksimum tersisa: " + activeSingleSelection.stok); return; }
+      currentModalQty = next;
+      document.getElementById('txtModalQtyField').value = currentModalQty;
+      var total = activeSingleSelection.harga * currentModalQty;
+      document.getElementById('lblTargetItemPrice').innerText = "Total (" + currentModalQty + "x): Rp " + total.toLocaleString('id-ID');
+    }
+
     function executeDirectUserCheckout() {
       if (!activeSingleSelection) return;
       var name = document.getElementById('txtUserOrderName').value.trim();
       var mail = document.getElementById('txtUserOrderAddress').value.trim();
       if (!name || !mail) { showToast("Nama dan Email wajib diisi!"); return; }
 
-      var payloadCart = [{ id: activeSingleSelection.id, nama: activeSingleSelection.nama, harga: activeSingleSelection.harga, qty: 1 }];
+      var finalTotal = activeSingleSelection.harga * currentModalQty;
+      var payloadCart = [{ id: activeSingleSelection.id, nama: activeSingleSelection.nama, harga: activeSingleSelection.harga, qty: currentModalQty }];
 
       closeUserOrderModal();
       showToast("Memproses pesanan...");
 
-      callServerApi({ action: "checkout", name: name, total: activeSingleSelection.harga, cart: payloadCart }, function(res) {
+      callServerApi({ action: "checkout", name: name, total: finalTotal, cart: payloadCart }, function(res) {
         if (res.success) {
-          var text = "*INVOICE PESANAN*\nID: " + res.transactionId + "\nNama: " + name + "\nTujuan: " + mail + "\nLayanan: " + activeSingleSelection.nama + "\nTotal: Rp " + activeSingleSelection.harga.toLocaleString('id-ID') + "\n\nMohon konfirmasi pembayarannya.";
+          var text = "*INVOICE PESANAN*\nID: " + res.transactionId + "\nNama: " + name + "\nTujuan: " + mail + "\nLayanan: " + activeSingleSelection.nama + " (" + currentModalQty + "x)\nTotal: Rp " + finalTotal.toLocaleString('id-ID') + "\n\nMohon konfirmasi pembayarannya.";
           window.open("https://api.whatsapp.com/send?phone=" + WHATSAPP_ADMIN_NUMBER + "&text=" + encodeURIComponent(text), '_blank');
           doGlobalFetch();
           preloadTransactionCache();
@@ -319,7 +344,7 @@
     }
 
     function saveProductData() {
-      var payload = {
+      var payloadObj = {
         id: document.getElementById('formProductId').value,
         nama: document.getElementById('formProductName').value.trim(),
         kategori: document.getElementById('formProductCategory').value.trim(),
@@ -328,10 +353,15 @@
         keterangan: document.getElementById('formProductDesc').value.trim(),
         url_gambar: document.getElementById('formProductImg').value.trim()
       };
-      if (!payload.nama || !payload.kategori) { showToast("Nama & Kategori wajib diisi!"); return; }
+      if (!payloadObj.nama || !payloadObj.kategori) { showToast("Nama & Kategori wajib diisi!"); return; }
       closeProductModal();
       showToast("Menyimpan data...");
-      callServerApi({ action: "saveProduct", payload: payload, token: sessionStorage.getItem("pedia_session_token") || "" }, function(res) {
+      
+      callServerApi({ 
+        action: "saveProduct", 
+        payload: JSON.stringify(payloadObj), 
+        token: sessionStorage.getItem("pedia_session_token") || "" 
+      }, function(res) {
         showToast(res.message);
         doGlobalFetch();
       });

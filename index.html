@@ -20,7 +20,6 @@
       --border: rgba(255, 255, 255, 0.07);
       --danger: #ff4a5a;
       --warning: #ffaa00;
-      --info: #00bfff;
       --success: #22c55e;
       --header-bg: rgba(7, 10, 19, 0.85);
       --input-bg: rgba(0, 0, 0, 0.4);
@@ -70,7 +69,7 @@
     .tx-table th, .tx-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
     .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 10, 0.6); backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem; }
     .modal-backdrop.show { opacity: 1; pointer-events: auto; }
-    .modal-window { background: var(--bg-card-hover); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 450px; padding: 1.5rem; }
+    .modal-window { background: var(--bg-card-hover); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 450px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
     .form-group { margin-bottom: 1rem; }
     .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; }
     .form-group input, .form-group textarea { width: 100%; padding: 0.65rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); }
@@ -84,6 +83,7 @@
   <header>
     <div class="brand"><i class="fa-solid fa-bolt" style="color:#00ffaa;"></i>SAYUR<span>PEDIA</span></div>
     <div class="nav-controls">
+      <button class="btn-premium" id="btnAddNewProduct" style="display:none; padding:0.4rem 0.8rem; font-size:0.75rem;" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Tambah Layanan</button>
       <div class="role-container">
         <button class="role-btn active" id="btnRoleUser" onclick="switchRole('user')">User</button>
         <button class="role-btn" id="btnRoleAdmin" onclick="switchRole('admin')">Admin</button>
@@ -126,6 +126,7 @@
     </div>
   </div>
 
+  <!-- MODAL CHECKOUT USER -->
   <div class="modal-backdrop" id="userOrderModal">
     <div class="modal-window">
       <h3 id="lblTargetItemName" style="color:var(--brand-text); margin-bottom:0.5rem;">Produk</h3>
@@ -137,10 +138,28 @@
     </div>
   </div>
 
+  <!-- MODAL TAMBAH/EDIT PRODUK ADMIN -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal-window">
+      <h3 id="modalTitle" style="color:var(--brand-text); margin-bottom:1rem;">Kelola Layanan</h3>
+      <input type="hidden" id="formProductId">
+      <div class="form-group"><label>Nama Layanan / Durasi</label><input type="text" id="formProductName"></div>
+      <div class="form-group"><label>Kategori (YouTube / Canva / dll)</label><input type="text" id="formProductCategory"></div>
+      <div style="display:flex; gap:0.5rem;">
+        <div class="form-group" style="flex:1;"><label>Harga</label><input type="number" id="formProductPrice"></div>
+        <div class="form-group" style="flex:1;"><label>Stok</label><input type="number" id="formProductStock"></div>
+      </div>
+      <div class="form-group"><label>Keterangan / Garansi</label><textarea id="formProductDesc" rows="2"></textarea></div>
+      <div class="form-group"><label>URL Gambar Banner</label><input type="text" id="formProductImg"></div>
+      <button class="btn-premium" onclick="saveProductData()">Simpan Layanan</button>
+      <button id="btnDeleteProduct" style="background:var(--danger); color:white; border:none; padding:0.6rem; border-radius:8px; width:100%; margin-top:0.5rem; font-weight:700; display:none; cursor:pointer;" onclick="deleteProductData()">Hapus Layanan</button>
+      <button onclick="closeProductModal()" style="background:transparent; border:none; color:var(--text-muted); width:100%; margin-top:0.8rem; cursor:pointer;">Batal</button>
+    </div>
+  </div>
+
   <div class="toast" id="globalToast">Pesan Terkirim!</div>
 
   <script>
-    // URL RESMI ANDA YANG SUDAH TERPASANG OTOMATIS
     var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx052L7JBQFot_fTf_ElISxnxli77924GarqDcjEDwMnEbtsKRcFJ-ca-pOvYrsQkGCpA/exec";
 
     var currentRole = 'user';
@@ -153,6 +172,15 @@
     window.addEventListener('DOMContentLoaded', function() {
       doGlobalFetch();
       preloadTransactionCache();
+      var token = sessionStorage.getItem("pedia_session_token");
+      if (token) {
+        currentRole = 'admin';
+        document.getElementById('btnAddNewProduct').style.display = 'block';
+        document.getElementById('adminTxPanel').style.display = 'block';
+        document.getElementById('userTrackSection').style.display = 'none';
+        document.getElementById('btnRoleUser').classList.remove('active');
+        document.getElementById('btnRoleAdmin').classList.add('active');
+      }
     });
 
     function showToast(msg) {
@@ -200,6 +228,11 @@
       }
       products.forEach(p => {
         var id = p[0], nama = p[1], kat = p[2], harga = Number(p[3]), stok = Number(p[4]), desc = p[5], img = p[6] || 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400';
+        var safeNama = nama.replace(/'/g, "\\'");
+        var actionBtn = currentRole === 'admin' 
+          ? `<button class="btn-buy" style="border-color:var(--warning); color:var(--warning);" onclick="openProductModal('${id}')"><i class="fa-solid fa-sliders"></i> Edit Item</button>`
+          : (stok > 0 ? `<button class="btn-buy" onclick="openUserOrderModal('${id}','${safeNama}',${harga})">Ambil Slot</button>` : `<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis</button>`);
+
         grid.innerHTML += `
           <div class="product-card">
             <img src="${img}" style="width:100%; height:140px; object-fit:cover;">
@@ -211,7 +244,7 @@
                 <span class="price-tag">Rp ${harga.toLocaleString('id-ID')}</span>
                 <span style="font-size:0.7rem; color:var(--text-muted);">Stok: <b>${stok}</b></span>
               </div>
-              ${stok > 0 ? `<button class="btn-buy" onclick="openUserOrderModal('${id}','${nama.replace(/'/g,"\\'")}',${harga})">Ambil Slot</button>` : `<button class="btn-buy" style="border-color:var(--danger); color:var(--danger);" disabled>Habis</button>`}
+              ${actionBtn}
             </div>
           </div>`;
       });
@@ -251,6 +284,70 @@
       });
     }
 
+    function openProductModal(productId) {
+      var modal = document.getElementById('productModal');
+      var btnDel = document.getElementById('btnDeleteProduct');
+      if (productId) {
+        var p = globalProducts.find(x => x[0] === productId);
+        if (p) {
+          document.getElementById('modalTitle').innerText = "Edit Layanan";
+          document.getElementById('formProductId').value = p[0];
+          document.getElementById('formProductName').value = p[1];
+          document.getElementById('formProductCategory').value = p[2];
+          document.getElementById('formProductPrice').value = p[3];
+          document.getElementById('formProductStock').value = p[4];
+          document.getElementById('formProductDesc').value = p[5];
+          document.getElementById('formProductImg').value = p[6] || '';
+          btnDel.style.display = 'block';
+        }
+      } else {
+        document.getElementById('modalTitle').innerText = "Tambah Layanan Baru";
+        document.getElementById('formProductId').value = '';
+        document.getElementById('formProductName').value = '';
+        document.getElementById('formProductCategory').value = '';
+        document.getElementById('formProductPrice').value = '';
+        document.getElementById('formProductStock').value = '';
+        document.getElementById('formProductDesc').value = '';
+        document.getElementById('formProductImg').value = '';
+        btnDel.style.display = 'none';
+      }
+      modal.classList.add('show');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('show');
+    }
+
+    function saveProductData() {
+      var payload = {
+        id: document.getElementById('formProductId').value,
+        nama: document.getElementById('formProductName').value.trim(),
+        kategori: document.getElementById('formProductCategory').value.trim(),
+        harga: Number(document.getElementById('formProductPrice').value),
+        stok: Number(document.getElementById('formProductStock').value),
+        keterangan: document.getElementById('formProductDesc').value.trim(),
+        url_gambar: document.getElementById('formProductImg').value.trim()
+      };
+      if (!payload.nama || !payload.kategori) { showToast("Nama & Kategori wajib diisi!"); return; }
+      closeProductModal();
+      showToast("Menyimpan data...");
+      callServerApi({ action: "saveProduct", payload: payload, token: sessionStorage.getItem("pedia_session_token") || "" }, function(res) {
+        showToast(res.message);
+        doGlobalFetch();
+      });
+    }
+
+    function deleteProductData() {
+      var id = document.getElementById('formProductId').value;
+      if (!id || !confirm("Yakin ingin menghapus layanan ini secara permanen?")) return;
+      closeProductModal();
+      showToast("Menghapus...");
+      callServerApi({ action: "deleteProduct", id: id, token: sessionStorage.getItem("pedia_session_token") || "" }, function(res) {
+        showToast(res.message);
+        doGlobalFetch();
+      });
+    }
+
     function preloadTransactionCache() {
       callServerApi({ action: "getTransactions", token: sessionStorage.getItem("pedia_session_token") || "" }, function(res) {
         if (res && res.transactions) cacheTransactions = res.transactions;
@@ -271,8 +368,11 @@
       if (role === 'admin') {
         if (sessionStorage.getItem("pedia_session_token")) {
           currentRole = 'admin';
+          document.getElementById('btnAddNewProduct').style.display = 'block';
           document.getElementById('adminTxPanel').style.display = 'block';
+          document.getElementById('userTrackSection').style.display = 'none';
           fetchAdminTransactions();
+          renderCatalog(globalProducts);
           return;
         }
         var pass = prompt("Masukkan Kunci Admin:");
@@ -281,8 +381,11 @@
           if (res.authorized) {
             sessionStorage.setItem("pedia_session_token", res.token);
             currentRole = 'admin';
+            document.getElementById('btnAddNewProduct').style.display = 'block';
             document.getElementById('adminTxPanel').style.display = 'block';
+            document.getElementById('userTrackSection').style.display = 'none';
             fetchAdminTransactions();
+            renderCatalog(globalProducts);
             showToast(res.message);
           } else {
             showToast(res.message);
@@ -291,7 +394,10 @@
       } else {
         sessionStorage.removeItem("pedia_session_token");
         currentRole = 'user';
+        document.getElementById('btnAddNewProduct').style.display = 'none';
         document.getElementById('adminTxPanel').style.display = 'none';
+        document.getElementById('userTrackSection').style.display = 'flex';
+        renderCatalog(globalProducts);
       }
       document.getElementById('btnRoleUser').classList.toggle('active', role === 'user');
       document.getElementById('btnRoleAdmin').classList.toggle('active', role === 'admin');
